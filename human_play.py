@@ -16,7 +16,9 @@ from policy_value_net_numpy import PolicyValueNetNumpy
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 # from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 # from policy_value_net_keras import PolicyValueNet  # Keras
-
+import pickle
+import torch
+from collections import OrderedDict
 
 class Human(object):
     """
@@ -47,13 +49,27 @@ class Human(object):
 
 
 def run():
-    n = 5
-    width, height = 8, 8
-    model_file = 'best_policy_8_8_5.model'
+    n = 4
+    width, height = 6, 6
+    model_file = 'best_policy_6_6_4.model'
     try:
         board = Board(width=width, height=height, n_in_row=n)
         game = Game(board)
 
+        """
+        param_theano = pickle.load(open(model_file, 'rb'))
+        keys = ['conv1.weight', 'conv1.bias', 'conv2.weight', 'conv2.bias', 'conv3.weight', 'conv3.bias'
+            , 'act_conv1.weight', 'act_conv1.bias', 'act_fc1.weight', 'act_fc1.bias'
+            , 'val_conv1.weight', 'val_conv1.bias', 'val_fc1.weight', 'val_fc1.bias', 'val_fc2.weight', 'val_fc2.bias']
+        param_pytorch = OrderedDict()
+        for key, value in zip(keys, param_theano):
+            if 'fc' in key and 'weight' in key:
+                param_pytorch[key] = torch.FloatTensor(value.T)
+            elif 'conv' in key and 'weight' in key:
+                param_pytorch[key] = torch.FloatTensor(value[:, :, ::-1, ::-1].copy())
+            else:
+                param_pytorch[key] = torch.FloatTensor(value)
+        """
         # ############### human VS AI ###################
         # load the trained policy_value_net in either Theano/Lasagne, PyTorch or TensorFlow
 
@@ -62,6 +78,7 @@ def run():
 
         # load the provided model (trained in Theano/Lasagne) into a MCTS player written in pure numpy
         try:
+            #policy_param = model_file
             policy_param = pickle.load(open(model_file, 'rb'))
         except:
             policy_param = pickle.load(open(model_file, 'rb'),
