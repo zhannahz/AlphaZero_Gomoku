@@ -29,7 +29,7 @@ class TrainPipeline():
                            n_in_row=self.n_in_row)
         self.game = Game(self.board)
         # training params
-        self.learn_rate = 2e-3
+        self.learn_rate = 1.4e-3
         self.lr_multiplier = 1.0  # adaptively adjust the learning rate based on KL
         self.temp = 1.0  # the temperature param
         self.n_playout = 400  # num of simulations for each move
@@ -41,11 +41,11 @@ class TrainPipeline():
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
-        self.game_batch_num = 1500
+        self.game_batch_num = 3000
         self.best_win_ratio = 0.0
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 1000
+        self.pure_mcts_playout_num = 800
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
@@ -65,27 +65,25 @@ class TrainPipeline():
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
         extend_data = []
-        for state, mcts_porb, winner in play_data:
-            for i in [1, 2, 3, 4]:
-                # CHANGED: board only flips horizontally because it is asymmetrical
-                # rotate counterclockwise
-                #    equi_state = np.array([np.rot90(s, i) for s in state])
-                #    equi_mcts_prob = np.rot90(np.flipud(
-                #        mcts_porb.reshape(self.board_height, self.board_width)), i)
-                #    extend_data.append((equi_state,
-                #                    np.flipud(equi_mcts_prob).flatten(),
-                #                   winner))
-                # flip horizontally
-                # equi_state = np.array([np.fliplr(s) for s in equi_state])
-                equi_state = np.array([np.fliplr(s) for s in state])
-                # equi_mcts_prob = np.fliplr(equi_mcts_prob)
-                equi_mcts_prob = np.fliplr(mcts_porb.reshape(self.board_height, self.board_width))  # Flip horizontally
-                # extend_data.append((equi_state,
-                                    # np.flipud(equi_mcts_prob).flatten(),
-                                    # winner))
-                extend_data.append((equi_state,
-                            equi_mcts_prob.flatten(),
-                            winner))
+        for state, mcts_prob, winner in play_data:
+            # Original state and mcts_prob
+            extend_data.append((state, mcts_prob.flatten(), winner))
+
+            # Flip horizontally
+            equi_state_h = np.array([np.fliplr(s) for s in state])
+            equi_mcts_prob_h = np.fliplr(mcts_prob.reshape(self.board_height, self.board_width)).flatten()
+            extend_data.append((equi_state_h, equi_mcts_prob_h, winner))
+
+            # Flip vertically
+            equi_state_v = np.array([np.flipud(s) for s in state])
+            equi_mcts_prob_v = np.flipud(mcts_prob.reshape(self.board_height, self.board_width)).flatten()
+            extend_data.append((equi_state_v, equi_mcts_prob_v, winner))
+
+            # Flip both horizontally and vertically
+            equi_state_hv = np.array([np.flipud(np.fliplr(s)) for s in state])
+            equi_mcts_prob_hv = np.flipud(np.fliplr(mcts_prob.reshape(self.board_height, self.board_width))).flatten()
+            extend_data.append((equi_state_hv, equi_mcts_prob_hv, winner))
+
         return extend_data
 
     def collect_selfplay_data(self, n_games=1):
