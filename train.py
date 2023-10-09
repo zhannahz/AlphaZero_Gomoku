@@ -21,15 +21,15 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game
-        self.board_width = 9
-        self.board_height = 4
+        self.board_width = 6
+        self.board_height = 6
         self.n_in_row = 4
         self.board = Board(width=self.board_width,
                            height=self.board_height,
                            n_in_row=self.n_in_row)
         self.game = Game(self.board)
         # training params
-        self.learn_rate = 1.4e-3
+        self.learn_rate = 1.8e-3
         self.lr_multiplier = 1.0  # adaptively adjust the learning rate based on KL
         self.temp = 1.0  # the temperature param
         self.n_playout = 400  # num of simulations for each move
@@ -41,11 +41,11 @@ class TrainPipeline():
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
-        self.game_batch_num = 3000
+        self.game_batch_num = 2400
         self.best_win_ratio = 0.0
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 800
+        self.pure_mcts_playout_num = 1000
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
@@ -64,27 +64,49 @@ class TrainPipeline():
         """augment the data set by rotation and flipping
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
+        """augment the data set by rotation and flipping
+                play_data: [(state, mcts_prob, winner_z), ..., ...]
+                """
         extend_data = []
         for state, mcts_prob, winner in play_data:
-            # Original state and mcts_prob
-            extend_data.append((state, mcts_prob.flatten(), winner))
+            for i in [1, 2, 3, 4]:
+                # rotate counterclockwise
+                equi_state = np.array([np.rot90(s, i) for s in state])
+                equi_mcts_prob = np.rot90(np.flipud(
+                    mcts_prob.reshape(self.board_height, self.board_width)), i)
+                extend_data.append((equi_state,
+                                    np.flipud(equi_mcts_prob).flatten(),
+                                    winner))
+                # flip horizontally
+                equi_state = np.array([np.fliplr(s) for s in equi_state])
+                equi_mcts_prob = np.fliplr(equi_mcts_prob)
+                extend_data.append((equi_state,
+                                    np.flipud(equi_mcts_prob).flatten(),
+                                    winner))
+        return extend_data
 
+        """
+        extend_data = []
+        for state, mcts_prob, winner in play_data:
             # Flip horizontally
             equi_state_h = np.array([np.fliplr(s) for s in state])
-            equi_mcts_prob_h = np.fliplr(mcts_prob.reshape(self.board_height, self.board_width)).flatten()
-            extend_data.append((equi_state_h, equi_mcts_prob_h, winner))
+            equi_mcts_prob_h = np.fliplr(np.flipud(
+                    mcts_prob.reshape(self.board_height, self.board_width)))
+            extend_data.append((equi_state_h, np.flipud(equi_mcts_prob_h).flatten(), winner))
 
             # Flip vertically
             equi_state_v = np.array([np.flipud(s) for s in state])
-            equi_mcts_prob_v = np.flipud(mcts_prob.reshape(self.board_height, self.board_width)).flatten()
-            extend_data.append((equi_state_v, equi_mcts_prob_v, winner))
+            equi_mcts_prob_v = np.flipud(np.flipud(
+                    mcts_prob.reshape(self.board_height, self.board_width)))
+            extend_data.append((equi_state_v, np.flipud(equi_mcts_prob_v).flatten(), winner))
 
             # Flip both horizontally and vertically
-            equi_state_hv = np.array([np.flipud(np.fliplr(s)) for s in state])
-            equi_mcts_prob_hv = np.flipud(np.fliplr(mcts_prob.reshape(self.board_height, self.board_width))).flatten()
-            extend_data.append((equi_state_hv, equi_mcts_prob_hv, winner))
+            equi_state_hv = np.array([np.fliplr(s) for s in equi_state_v])
+            equi_mcts_prob_hv = np.fliplr(equi_mcts_prob_v)
+            extend_data.append((equi_state_hv, np.flipud(equi_mcts_prob_hv).flatten(), winner))
 
         return extend_data
+        """
 
     def collect_selfplay_data(self, n_games=1):
         """collect self-play data for training"""

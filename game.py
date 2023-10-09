@@ -90,10 +90,13 @@ class Board(object):
         n = self.n_in_row
 
         moved = list(set(range(width * height)) - set(self.availables))
+
+        # means that there aren't enough moves on the board to determine a winner.
         if len(moved) < self.n_in_row *2-1:
             return False, -1
 
         for m in moved:
+            #  convert a one-dimensional index (m) into two-dimensional coordinates (h for height/row and w for width/column)
             h = m // width
             w = m % width
             player = states[m]
@@ -116,9 +119,64 @@ class Board(object):
 
         return False, -1
 
+    def has_a_winner_knobby(self):
+        width = self.width
+        height = self.height
+        states = self.states
+        n = self.n_in_row
+
+        moved = list(set(range(width * height)) - set(self.availables))
+
+        # means that there aren't enough moves on the board to determine a winner.
+        if len(moved) < self.n_in_row *2-1:
+            return False, -1
+
+        for m in moved:
+            #  convert a one-dimensional index (m) into two-dimensional coordinates (h for height/row and w for width/column)
+            h = m // width
+            w = m % width
+            player = states[m]
+
+            # check for bottom 3 in a knobby
+            if (w in range(width - 2) and
+                    len(set(states.get(i, -1) for i in range(m, m + 3))) == 1):
+                # check for the middle 2 in a knobby
+                # up direction
+                vertical_knob_up = set()
+                vertical_knob_up.add(states.get(m + 1, -1))
+                vertical_knob_up.add(states.get(m + 1 + width, -1))
+                vertical_knob_down = set()
+                vertical_knob_down.add(states.get(m + 1, -1))
+                vertical_knob_down.add(states.get(m + 1 - width, -1))
+                if (len(set(vertical_knob_up)) == 1):
+                    return True, player
+                elif (len(set(vertical_knob_down)) == 1):
+                    return True, player
+
+            if (h in range(height - 2) and
+                    len(set(states.get(i, -1) for i in range(m, m + 3 * width, width))) == 1):
+                # check for the middle 2 in a knobby
+                # right direction
+                horizontal_knob_right = set()
+                horizontal_knob_right.add(states.get(m + width, -1))
+                horizontal_knob_right.add(states.get(m + width + 1, -1))
+                horizontal_knob_left = set()
+                horizontal_knob_left.add(states.get(m + width, -1))
+                horizontal_knob_left.add(states.get(m + width - 1, -1))
+                if (len(set(horizontal_knob_right)) == 1):
+                    return True, player
+                elif (len(set(horizontal_knob_left)) == 1):
+                    return True, player
+
+
+        return False, -1
+
     def game_end(self):
         """Check whether the game is ended or not"""
+        # Check whether the 4iar game is ended or not
         win, winner = self.has_a_winner()
+        # Check whether the knobby game is ended or not
+        #win, winner = self.has_a_winner_knobby()
         if win:
             return True, winner
         elif not len(self.availables):
