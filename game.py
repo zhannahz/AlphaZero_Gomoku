@@ -174,9 +174,9 @@ class Board(object):
     def game_end(self):
         """Check whether the game is ended or not"""
         # Check whether the 4iar game is ended or not
-        win, winner = self.has_a_winner()
+        #win, winner = self.has_a_winner()
         # Check whether the knobby game is ended or not
-        #win, winner = self.has_a_winner_knobby()
+        win, winner = self.has_a_winner_knobby()
         if win:
             return True, winner
         elif not len(self.availables):
@@ -217,7 +217,7 @@ class Game(object):
                     print('_'.center(8), end='')
             print('\r\n\r\n')
 
-    def start_play(self, player1, player2, start_player=0, is_shown=1):
+    def start_play(self, player2, player1, start_player=0, is_shown=1):
         """start a game between two players"""
         if start_player not in (0, 1):
             raise Exception('start_player should be either 0 (player1 first) '
