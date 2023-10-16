@@ -1,10 +1,28 @@
-# Open the file for reading
-with open('data.txt', 'r') as f:
-    # Read lines into a list, one line per item
-    data = f.readlines()
+import os
+import csv
 
-# Optionally, you can remove any trailing whitespace (including newlines) from each item
-data = [line.strip() for line in data]
+abs_dir = os.path.dirname(os.path.abspath(__file__)) + "/Data/"
+print (abs_dir)
+def main():
+    data = open_data_all()
+    print(data)
 
-# Now, data is a list where each item corresponds to a line from the file
-print(data)
+def open_data_all():
+    """Open all data files."""
+    files = os.listdir(abs_dir)
+    if files is None:
+        print("No data files found.")
+        return None
+    d = []
+    for file in files:
+        if file.endswith(".txt"):
+            d.append(open_data(os.path.join(abs_dir, file)))
+    return d
+
+def open_data(file):
+    """Open a data file."""
+    with open(file, 'w', newline="#") as f:
+        return f.readlines()
+
+if __name__ == "__main__":
+    main()
