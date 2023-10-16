@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 import numpy as np
+import experiment as experiment
 
 
 class Board(object):
@@ -57,21 +58,24 @@ class Board(object):
         """return the board state from the perspective of the current player.
         state shape: 4*width*height
         """
-
         square_state = np.zeros((4, self.width, self.height))
         if self.states:
             moves, players = np.array(list(zip(*self.states.items())))
             move_curr = moves[players == self.current_player]
             move_oppo = moves[players != self.current_player]
+            # Represents the moves of the current player.
             square_state[0][move_curr // self.width,
                             move_curr % self.height] = 1.0
+            # Represents the moves of the opponent.
             square_state[1][move_oppo // self.width,
                             move_oppo % self.height] = 1.0
             # indicate the last move location
             square_state[2][self.last_move // self.width,
                             self.last_move % self.height] = 1.0
         if len(self.states) % 2 == 0:
-            square_state[3][:, :] = 1.0  # indicate the colour to play
+            # Indicates which player's turn it is to play next.
+            square_state[3][:, :] = 1.0
+        #  reverse the order of rows in each matrix to switch coordinate
         return square_state[:, ::-1, :]
 
     def do_move(self, move):
@@ -82,6 +86,7 @@ class Board(object):
             else self.players[1]
         )
         self.last_move = move
+
 
     def has_a_winner(self):
         width = self.width
@@ -192,6 +197,7 @@ class Game(object):
 
     def __init__(self, board, **kwargs):
         self.board = board
+        self.game_steps = 0
 
     def graphic(self, board, player1, player2):
         """Draw the board and show game info"""
@@ -217,7 +223,7 @@ class Game(object):
                     print('_'.center(8), end='')
             print('\r\n\r\n')
 
-    def start_play(self, player2, player1, start_player=0, is_shown=1):
+    def start_play(self, player1, player2, start_player=1, is_shown=1):
         """start a game between two players"""
         if start_player not in (0, 1):
             raise Exception('start_player should be either 0 (player1 first) '
@@ -232,8 +238,45 @@ class Game(object):
         while True:
             current_player = self.board.get_current_player()
             player_in_turn = players[current_player]
-            move = player_in_turn.get_action(self.board)
+
+            # -- Get MCTS probabilities for the current board state.
+            move, mcts_probs = player_in_turn.get_action(self.board, return_prob=True)
             self.board.do_move(move)
+
+            if current_player == 1:
+                # Save the board matrix
+                self.game_steps += 1
+                state_matrices = self.board.current_state()
+                player_moves = state_matrices[1]
+                ai_moves = state_matrices[0]
+                ai_moves[ai_moves == 1] = 2
+                last_move = state_matrices[2]
+                previous_matrix = player_moves + ai_moves - last_move
+                current_matrix = player_moves + ai_moves
+
+                # --
+                # Get MCTS probabilities for the current board state.
+                # round
+                mcts_probs = np.round(mcts_probs, 3)
+                # reverse order of rows to switch coordinate system
+                prob_matrix = mcts_probs.reshape(self.board.width, self.board.height)
+                prob_matrix = np.flip(prob_matrix, 0)
+                # --
+
+                # only print evaluation for player 1 (human)
+        #        print("Evaluated move probability for player: \n", prob_matrix)
+        #        print("previous matrix: \n", previous_matrix)
+        #        print("player move in matrix: \n", last_move)
+        #        print("player move position: \n", self.board.move_to_location(move))
+        #        print("current matrix: \n", current_matrix)
+
+                # save above data to one file
+                data = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
+                experiment.save_data(data, self.game_steps)
+                print("Saved board state")
+
+
+
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
             end, winner = self.board.game_end()
@@ -279,3 +322,4 @@ class Game(object):
                     else:
                         print("Game end. Tie")
                 return winner, zip(states, mcts_probs, winners_z)
+

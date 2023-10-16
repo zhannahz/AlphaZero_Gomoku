@@ -8,6 +8,9 @@ Input your move in the format: 2,3
 
 from __future__ import print_function
 import pickle
+
+import numpy as np
+
 from game import Board, Game
 from mcts_pure import MCTSPlayer as MCTS_Pure
 from mcts_alphaZero import MCTSPlayer
@@ -20,6 +23,9 @@ import pickle
 import torch
 from collections import OrderedDict
 
+import mcts_alphaZero
+
+
 class Human(object):
     """
     human player
@@ -27,11 +33,40 @@ class Human(object):
 
     def __init__(self):
         self.player = None
+        self.mcts_hidden = None
 
     def set_player_ind(self, p):
         self.player = p
 
-    def get_action(self, board):
+    def set_hidden_player(self, board, model="best_policy_6_6_knobby_1008.model"):
+        best_policy = PolicyValueNet(board.width, board.height, model_file=model)
+        self.mcts_hidden = MCTSPlayer(best_policy.policy_value_fn,
+                                      c_puct=5,
+                                      n_playout=400)
+
+    def get_hidden_probability(self, board, temp):
+        move_probs = np.zeros(board.width * board.height)
+        acts, probs = self.mcts_hidden.mcts.get_move_probs(board, temp)
+        move_probs[list(acts)] = probs
+        return move_probs
+
+
+    def get_action(self, board, temp=0.75, return_prob=0):
+        # temp (0, 1] needs to be larger for detailed probability map
+
+        # --- get the action from a MCTS player for evaluating player move
+
+        sensible_moves = board.availables
+        self.set_hidden_player(board)
+        move_probs = np.zeros(board.width * board.height)
+
+        if len(sensible_moves) > 0:
+            move_probs = self.get_hidden_probability(board, temp)
+        else:
+            move_probs = None
+
+        # ---
+
         try:
             location = input("Your move: ")
             if isinstance(location, str):  # for python3
@@ -42,7 +77,12 @@ class Human(object):
         if move == -1 or move not in board.availables:
             print("invalid move")
             move = self.get_action(board)
-        return move
+
+        # allow human player get actions to return probabilities too
+        if return_prob and move_probs is not None:
+            return move, move_probs
+        else:
+            return move
 
     def __str__(self):
         return "Human {}".format(self.player)
@@ -51,8 +91,8 @@ class Human(object):
 def run():
     n = 4
     width, height = 6, 6
-    model_file = 'best_policy_6_6_knobby_1011.model'
-    #model_file = 'best_policy_6_6_4_1010_mid.model'
+    model_file = 'best_policy_6_6_knobby_1011_mid.model'
+    #model_file = 'best_policy_6_6_knobby_1008.model'
     try:
         board = Board(width=width, height=height, n_in_row=n)
         game = Game(board)
@@ -80,7 +120,7 @@ def run():
         # load the provided model (trained in Theano/Lasagne) into a MCTS player written in pure numpy
         try:
             policy_param = model_file
-            #policy_param = pickle.load(open(model_file, 'rb'))
+            # policy_param = pickle.load(open(model_file, 'rb'))
         except:
             policy_param = pickle.load(open(model_file, 'rb'),
                                        encoding='bytes')  # To support python3
