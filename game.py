@@ -4,8 +4,14 @@
 """
 
 from __future__ import print_function
+
+import os
+
 import numpy as np
-import experiment as experiment
+
+import experiment
+
+import json
 
 
 class Board(object):
@@ -87,7 +93,6 @@ class Board(object):
         )
         self.last_move = move
 
-
     def has_a_winner(self):
         width = self.width
         height = self.height
@@ -97,7 +102,7 @@ class Board(object):
         moved = list(set(range(width * height)) - set(self.availables))
 
         # means that there aren't enough moves on the board to determine a winner.
-        if len(moved) < self.n_in_row *2-1:
+        if len(moved) < self.n_in_row * 2 - 1:
             return False, -1
 
         for m in moved:
@@ -133,7 +138,7 @@ class Board(object):
         moved = list(set(range(width * height)) - set(self.availables))
 
         # means that there aren't enough moves on the board to determine a winner.
-        if len(moved) < self.n_in_row *2-1:
+        if len(moved) < self.n_in_row * 2 - 1:
             return False, -1
 
         for m in moved:
@@ -173,15 +178,22 @@ class Board(object):
                 elif (len(set(horizontal_knob_left)) == 1):
                     return True, player
 
-
         return False, -1
 
     def game_end(self):
         """Check whether the game is ended or not"""
-        # Check whether the 4iar game is ended or not
-        #win, winner = self.has_a_winner()
-        # Check whether the knobby game is ended or not
-        win, winner = self.has_a_winner_knobby()
+        global params
+        params = load_params_from_file()
+
+        if params["model"] == 0:
+            # Check whether the 4iar game is ended or not
+            win, winner = self.has_a_winner()
+        elif params["model"] == 1:
+            # Check whether the knobby game is ended or not
+            win, winner = self.has_a_winner_knobby()
+        else:
+            print("Invalid model type")
+            return False, -1
         if win:
             return True, winner
         elif not len(self.availables):
@@ -225,6 +237,9 @@ class Game(object):
 
     def start_play(self, player1, player2, start_player=1, is_shown=1):
         """start a game between two players"""
+        global params
+        params = load_params_from_file()
+
         if start_player not in (0, 1):
             raise Exception('start_player should be either 0 (player1 first) '
                             'or 1 (player2 first)')
@@ -244,8 +259,10 @@ class Game(object):
             self.board.do_move(move)
 
             if current_player == 1:
+                print("Player 1 turn")
                 # Save the board matrix
                 self.game_steps += 1
+                print("Game steps:", self.game_steps)
                 state_matrices = self.board.current_state()
                 player_moves = state_matrices[1]
                 ai_moves = state_matrices[0]
@@ -264,18 +281,15 @@ class Game(object):
                 # --
 
                 # only print evaluation for player 1 (human)
-        #        print("Evaluated move probability for player: \n", prob_matrix)
-        #        print("previous matrix: \n", previous_matrix)
-        #        print("player move in matrix: \n", last_move)
-        #        print("player move position: \n", self.board.move_to_location(move))
-        #        print("current matrix: \n", current_matrix)
+                #        print("Evaluated move probability for player: \n", prob_matrix)
+                #        print("previous matrix: \n", previous_matrix)
+                #        print("player move in matrix: \n", last_move)
+                #        print("player move position: \n", self.board.move_to_location(move))
+                #        print("current matrix: \n", current_matrix)
 
                 # save above data to one file
                 data = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
-                experiment.save_data(data, self.game_steps)
-                print("Saved board state")
-
-
+                experiment.save_board_data(data, self.game_steps)
 
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
@@ -284,14 +298,19 @@ class Game(object):
                 if is_shown:
                     if winner != -1:
                         print("Game end. Winner is", players[winner])
+                        experiment.update_with_condition()
                     else:
                         print("Game end. Tie")
+                        experiment.update_with_condition()
                 return winner
 
     def start_self_play(self, player, is_shown=0, temp=1e-3):
         """ start a self-play game using a MCTS player, reuse the search tree,
         and store the self-play data: (state, mcts_probs, z) for training
         """
+        global params
+        params = load_params_from_file()
+
         self.board.init_board()
         p1, p2 = self.board.players
         states, mcts_probs, current_players = [], [], []
@@ -318,8 +337,23 @@ class Game(object):
                 player.reset_player()
                 if is_shown:
                     if winner != -1:
-                        print("Game end. Winner is player:", winner)
+                        print("Winner is player:", winner)
+                        params["state"] = 2
+                        store_params_to_file()
                     else:
-                        print("Game end. Tie")
+                        print("No winner. Tie")
+                        params["state"] = 2
+                        store_params_to_file()
                 return winner, zip(states, mcts_probs, winners_z)
 
+def store_params_to_file(filename="params.json"):
+    id = params["id"]
+    abs_dir = os.path.dirname(os.path.abspath(__file__)) + "/Data/"
+    dir = os.path.join(abs_dir, f"{id}_{filename}")
+    filename = dir
+    with open(filename, 'w') as file:
+        json.dump(params, file)
+
+def load_params_from_file(filename="params.json"):
+    with open(filename, 'r') as file:
+        return json.load(file)

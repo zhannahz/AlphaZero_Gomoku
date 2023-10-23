@@ -21,7 +21,7 @@ def open_data_all():
 
 def open_data(file):
     """Open a data file."""
-    with open(file, 'w', newline="#") as f:
+    with open(file, 'r') as f:
         return f.readlines()
 
 if __name__ == "__main__":

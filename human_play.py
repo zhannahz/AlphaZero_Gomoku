@@ -22,23 +22,45 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 import pickle
 import torch
 from collections import OrderedDict
+import experiment
 
 import mcts_alphaZero
 
+import json
 
+import os
+
+four_model = "best_policy_6_6_4_1010_mid.model"
+knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+best_four_model = "best_policy_6_6_4_1008.model"
+best_knobby_model = "best_policy_6_6_knobby_1008.model"
 class Human(object):
     """
     human player
     """
 
     def __init__(self):
+        global params
+        params = load_params_from_file()
         self.player = None
         self.mcts_hidden = None
+        if params["model"] == 0:
+            self.model = four_model
+        elif params["model"] == 1:
+            self.model = knobby_model
+        else:
+            self.model = four_model
 
     def set_player_ind(self, p):
         self.player = p
 
-    def set_hidden_player(self, board, model="best_policy_6_6_knobby_1008.model"):
+    def set_hidden_player(self, board):
+        params = load_params_from_file()
+        if params["model"] == 0:
+            model = best_four_model
+        elif params["model"] == 1:
+            model = best_knobby_model
+
         best_policy = PolicyValueNet(board.width, board.height, model_file=model)
         self.mcts_hidden = MCTSPlayer(best_policy.policy_value_fn,
                                       c_puct=5,
@@ -89,10 +111,16 @@ class Human(object):
 
 
 def run():
+    params = load_params_from_file()
+
     n = 4
     width, height = 6, 6
-    model_file = 'best_policy_6_6_knobby_1011_mid.model'
-    #model_file = 'best_policy_6_6_knobby_1008.model'
+    if params["model"] == 0:
+        model_file = four_model
+    elif params["model"] == 1:
+        model_file = knobby_model
+
+
     try:
         board = Board(width=width, height=height, n_in_row=n)
         game = Game(board)
@@ -140,6 +168,9 @@ def run():
     except KeyboardInterrupt:
         print('\n\rquit')
 
+def load_params_from_file(filename="params.json"):
+    with open(filename, 'r') as file:
+        return json.load(file)
 
 if __name__ == '__main__':
     run()
