@@ -28,6 +28,7 @@ import mcts_alphaZero
 
 import json
 
+import time
 import os
 
 four_model = "best_policy_6_6_4_1010_mid.model"
@@ -54,12 +55,17 @@ class Human(object):
     def set_player_ind(self, p):
         self.player = p
 
-    def set_hidden_player(self, board):
-        params = load_params_from_file()
-        if params["model"] == 0:
+    def set_hidden_player(self, board, m=0):
+        if m == 0:
             model = best_four_model
-        elif params["model"] == 1:
+        elif m == 1:
             model = best_knobby_model
+        elif m == 2:
+            params = load_params_from_file()
+            if params["model"] == 0:
+                model = best_four_model
+            elif params["model"] == 1:
+                model = best_knobby_model
 
         best_policy = PolicyValueNet(board.width, board.height, model_file=model)
         self.mcts_hidden = MCTSPlayer(best_policy.policy_value_fn,
@@ -67,41 +73,60 @@ class Human(object):
                                       n_playout=400)
 
     def get_hidden_probability(self, board, temp):
+        # TODO: get the prob map from another game model too
         move_probs = np.zeros(board.width * board.height)
         acts, probs = self.mcts_hidden.mcts.get_move_probs(board, temp)
         move_probs[list(acts)] = probs
         return move_probs
 
 
-    def get_action(self, board, temp=0.75, return_prob=0):
+    def get_action(self, board, temp=0.75, return_prob=0, return_rt=0):
         # temp (0, 1] needs to be larger for detailed probability map
 
         # --- get the action from a MCTS player for evaluating player move
 
         sensible_moves = board.availables
-        self.set_hidden_player(board)
         move_probs = np.zeros(board.width * board.height)
+        move_probs_fiar = np.zeros(board.width * board.height)
+        move_probs_knobby = np.zeros(board.width * board.height)
 
         if len(sensible_moves) > 0:
-            move_probs = self.get_hidden_probability(board, temp)
+            if return_prob == 2:
+                self.set_hidden_player(board, 0)
+                move_probs_fiar = self.get_hidden_probability(board, temp)
+                self.set_hidden_player(board, 1)
+                move_probs_knobby = self.get_hidden_probability(board, temp)
+            elif return_prob == 1:
+                self.set_hidden_player(board, 2)
+                move_probs = self.get_hidden_probability(board, temp)
         else:
+            move_probs_fiar = None
+            move_probs_knobby = None
             move_probs = None
 
         # ---
 
         try:
+            rt_start = time.time()
             location = input("Your move: ")
             if isinstance(location, str):  # for python3
                 location = [int(n, 10) for n in location.split(",")]
             move = board.location_to_move(location)
+            rt_end = time.time()
+
         except Exception as e:
             move = -1
         if move == -1 or move not in board.availables:
             print("invalid move")
             move = self.get_action(board)
 
+        rt = rt_end - rt_start
+        print("Response time: ", rt)
+
         # allow human player get actions to return probabilities too
-        if return_prob and move_probs is not None:
+        if return_prob == 2 and return_rt == 1:
+            return move, move_probs_fiar, move_probs_knobby, rt
+        elif return_prob == 1:
             return move, move_probs
         else:
             return move
@@ -171,6 +196,7 @@ def run():
 def load_params_from_file(filename="params.json"):
     with open(filename, 'r') as file:
         return json.load(file)
+
 
 if __name__ == '__main__':
     run()

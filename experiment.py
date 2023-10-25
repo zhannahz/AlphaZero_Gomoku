@@ -6,23 +6,28 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-
-import fnmatch
-import shutil
 import subprocess
-
-from enum import Enum
 import os
-import random
 import numpy as np
 import json
 import shutil
-import glob
 
-n_inputs = 3
-#because i have non-english characters in my path, i have to use the raw string
+NUM_INPUTS = 4
+
+#because i have non-english characters in my path, use the raw string
 path = r"C:\Users\汉那\gitHubTracking\AlphaZero_Gomoku"
 
+
+class TextColor:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    UNDERLINE = '\033[4m'
+    RESET = '\033[0m'
 
 def main():
     global params
@@ -31,8 +36,11 @@ def main():
         "condition": 0,  # 0: block, 1: interchange
         "model": 0,  # 0: four-in-a-row, 1: knobby
         "state": 0,  # 0: init, 1: in_trial, 2: idle, 3: end
-        "trials_fouriar": 2,
-        "trials_knobby": 2,
+        "trials_fouriar": 0,
+        "trials_knobby": 0,
+        "max_moves": 0,
+        "moves_fouriar": 10,
+        "moves_knobby": 10,
         "fouriar_complete": False,
         "knobby_complete": False,
         "games_count": 0,
@@ -40,16 +48,20 @@ def main():
     inputs = input("Enter parameters for setting up the experiment (space as deliminator): "
                    "\n- participant id (pXX)"
                    "\n- condition (0: block learning, 1: interchange learning) "
-                   "\n- rule to start with (0: four-in-a-row, 1: knobby):\n")
+                   "\n- rule to start with (0: four-in-a-row, 1: knobby):"
+                   "\n- moves to control for:\n")
     inputs = inputs.split(" ")
-    if len(inputs) != n_inputs:
-        print("The experiment needs ", n_inputs, "parameters to set up. Please try again.")
+    if len(inputs) != NUM_INPUTS:
+        print("The experiment needs ", NUM_INPUTS, "parameters to set up. Please try again.")
         return
 
     for idx, param in enumerate(inputs, 0):
         params["participant_id"] = inputs[0]
         params["condition"] = int(inputs[1])
         params["model"] = int(inputs[2])
+        params["moves_fouriar"] = int(inputs[3])
+        params["moves_knobby"] = int(inputs[3])
+        params["max_moves"] = int(inputs[3])
 
     print("Participant ID: ", params["participant_id"])
 
@@ -62,6 +74,10 @@ def main():
         print("Rule to start with is four-in-a-row")
     else:
         print("Rule to start with is knobby")
+
+    print("Current moves left:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
+
+
     store_params_to_file()
 
     update_with_condition(True)
@@ -73,12 +89,10 @@ def update_with_condition(is_first=False):
 
     # block condition
     if params["condition"] == 0:
-        if params["model"] == 0:
-            if params["fouriar_complete"]:
-                params["model"] = 1
-        elif params["model"] == 1:
-            if params["knobby_complete"]:
-                params["model"] = 0
+        if params["model"] == 0 and params["fouriar_complete"]:
+            params["model"] = 1
+        elif params["model"] == 1 and params["knobby_complete"]:
+            params["model"] = 0
 
     # interchange condition
     elif params["condition"] == 1:
@@ -102,7 +116,7 @@ def start_a_game():
     # init
     if params["state"] == 0:
         print("Current state: init")
-        count_trials()
+        evaluate_game()
         params["state"] = 1
         params["games_count"] += 1
         store_params_to_file()
@@ -119,15 +133,15 @@ def start_a_game():
     # idle (between-trials)
     elif params["state"] == 2:
         print("Current state: idle")
-        if params["trials_fouriar"] == 0 and params["trials_knobby"] == 0:
+        if params["moves_fouriar"] <= 0 and params["moves_knobby"] <= 0:
             print("All trials completed")
             params["state"] = 3
             store_params_to_file()
-            start_a_game()
+            start_a_game() # call self to end experiment
 
         else:
             print("- - - Starting another game - - -")
-            count_trials()
+            evaluate_game()
             params["state"] = 1
             params["games_count"] += 1
             store_params_to_file()
@@ -144,30 +158,27 @@ def start_a_game():
 def end_experiment():
     params = load_params_from_file()
     move_files_with_id(params["participant_id"])
-    print("\033[31mExperiment is complete. Thank you for participating!")
+    print(TextColor.CYAN + "31mExperiment is complete. Thank you for participating!")
 
-def count_trials():
+def evaluate_game():
     global params
     params = load_params_from_file()
 
-    if (params["model"] == 0):
-        params["trials_fouriar"] -= 1
-    elif (params["model"] == 1):
-        params["trials_knobby"] -= 1
-
-    if (params["trials_fouriar"] == 0):
+    if (params["moves_fouriar"] <= 0):
         params["fouriar_complete"] = True
-    if (params["trials_knobby"] == 0):
+    if (params["moves_knobby"] <= 0):
         params["knobby_complete"] = True
 
-    print("Current trials left:", "4iar =", params["trials_fouriar"], "knobby =", params["trials_knobby"])
+    print("Max moves:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
 
 
 def call_human_play():
     if params["model"] == 0:
-        print("\033[31mCurrent game rule is four in a row")
+        print(TextColor.CYAN + "Current game rule is four in a row" + TextColor.RESET)
+        params["trials_fouriar"] += 1
     else:
-        print("\033[31mCurrent game rule is knobby")
+        print(TextColor.CYAN + "Current game rule is knobby" + TextColor.RESET)
+        params["trials_knobby"] += 1
     subprocess.call(['python', 'human_play.py'])
 
 
@@ -211,28 +222,33 @@ def board_to_matrix(self):
     return matrix
 
 
-def next_filename(append_step, base="data", extension=".txt"):
+def next_filename(base="data"):
     """Generate the next filename based on existing files."""
     global params
     params = load_params_from_file()
 
     append_id = str(params["participant_id"])
     games_count = str(params["games_count"])
-    count = 1
     abs_dir = os.path.dirname(os.path.abspath(__file__)) + "/Data/"
-    dir = os.path.join(abs_dir, f"{append_id}_{base}_{games_count}_{append_step}{extension}")
-    while os.path.exists(dir):
-        count += 1
-        return os.path.join(abs_dir, f"{append_id}_{base}_{games_count}_{append_step}-({count}){extension}")
+    dir = os.path.join(abs_dir, f"{append_id}_{base}_{games_count}")
+
     return os.path.join(dir)
 
 
-def save_board_data(data_list, append_step):
-    filename = next_filename(append_step)
-    with open(filename, "w") as file:
-        for item in data_list:
-            file.write(str(item) + "\n")
-    return filename  # Return the filename to inform the caller about the generated file
+def save_board_data(data, typename="data"):
+    ext1 = ".npy"
+    ext2 = ".txt"
+    filename = next_filename(typename)
+    filename1 = os.path.join(f"{filename}{ext1}")
+    filename2 = os.path.join(f"{filename}{ext2}")
+    np.save(filename1, data)
+    with open(filename2, "w") as file:
+        file.write(str(data))
+    #with open(filename, "w") as file:
+        #for item in data_list:
+            #file.write(str(item) + "\n")
+
+    return filename1  # Return the filename to inform the caller about the generated file
 
 
 if __name__ == "__main__":

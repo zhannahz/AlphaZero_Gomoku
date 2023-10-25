@@ -13,6 +13,20 @@ import experiment
 
 import json
 
+import time
+
+
+class TextColor:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    UNDERLINE = '\033[4m'
+    RESET = '\033[0m'
+
 
 class Board(object):
     """board for the game"""
@@ -210,6 +224,12 @@ class Game(object):
     def __init__(self, board, **kwargs):
         self.board = board
         self.game_steps = 0
+        self.player_steps = 0
+        self.game_state = np.empty((20, 4, 6, 6), dtype=object)
+        self.player_rt = np.empty((20, 1), dtype=object)
+        self.prob_knobby = np.empty((20, 6, 6), dtype=object)
+        self.prob_fouriar = np.empty((20, 6, 6), dtype=object)
+        self.board_differnece = np.empty((20, 2, 6, 6), dtype=object)
 
     def graphic(self, board, player1, player2):
         """Draw the board and show game info"""
@@ -255,10 +275,24 @@ class Game(object):
             player_in_turn = players[current_player]
 
             # -- Get MCTS probabilities for the current board state.
-            move, mcts_probs = player_in_turn.get_action(self.board, return_prob=True)
+            if current_player == 1:
+                move, move_probs_fiar, move_probs_knobby, rt = player_in_turn.get_action(self.board,
+                                                                                         return_prob=2,
+                                                                                     return_rt=1)
+            else:
+                move, move_probs = player_in_turn.get_action(self.board,
+                                                             return_prob=1)
+
             self.board.do_move(move)
             self.game_steps += 1
             if current_player == 1:
+                self.player_steps += 1
+                if params["model"] == 0:
+                    params["moves_fouriar"] -= 1
+                elif params["model"] == 1:
+                    params["moves_knobby"] -= 1
+                store_params_to_file()
+
                 print("Player 1 turn")
                 # Save the board matrix
                 state_matrices = self.board.current_state()
@@ -272,22 +306,29 @@ class Game(object):
                 # --
                 # Get MCTS probabilities for the current board state.
                 # round
-                mcts_probs = np.round(mcts_probs, 3)
+                move_probs_fiar = np.round(move_probs_fiar, 3)
                 # reverse order of rows to switch coordinate system
-                prob_matrix = mcts_probs.reshape(self.board.width, self.board.height)
-                prob_matrix = np.flip(prob_matrix, 0)
+                prob_matrix_fiar = move_probs_fiar.reshape(self.board.width, self.board.height)
+                prob_matrix_fiar = np.flip(prob_matrix_fiar, 0)
+
+                move_probs_knobby = np.round(move_probs_knobby, 3)
+                # reverse order of rows to switch coordinate system
+                prob_matrix_knobby = move_probs_knobby.reshape(self.board.width, self.board.height)
+                prob_matrix_knobby = np.flip(prob_matrix_knobby, 0)
                 # --
 
-                # only print evaluation for player 1 (human)
-                #        print("Evaluated move probability for player: \n", prob_matrix)
-                #        print("previous matrix: \n", previous_matrix)
-                #        print("player move in matrix: \n", last_move)
-                #        print("player move position: \n", self.board.move_to_location(move))
-                #        print("current matrix: \n", current_matrix)
-
                 # save above data to one file
-                data = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
-                experiment.save_board_data(data, self.game_steps)
+                # self.game_state[self.player_steps-1] = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
+
+                self.board_differnece[self.player_steps - 1] = np.array([previous_matrix, current_matrix])
+                self.prob_knobby[self.player_steps - 1] = prob_matrix_fiar
+                self.prob_fouriar[self.player_steps - 1] = prob_matrix_knobby
+                self.player_rt[self.player_steps - 1] = rt
+
+                experiment.save_board_data(self.prob_knobby, "probKnobby")
+                experiment.save_board_data(self.prob_fouriar, "probFouriar")
+                experiment.save_board_data(self.board_differnece, "boardDifference")
+                experiment.save_board_data(self.player_rt, "RT")
 
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
@@ -295,10 +336,10 @@ class Game(object):
             if end:
                 if is_shown:
                     if winner != -1:
-                        print("\033[31mGame end. Winner is", players[winner])
+                        print(TextColor.CYAN + "Game end. Winner is " + str(players[winner]) + TextColor.RESET)
                         experiment.update_with_condition()
                     else:
-                        print("\033[31mGame end. Tie")
+                        print(TextColor.CYAN + "Game end. No Winner. Tie" + TextColor.RESET)
                         experiment.update_with_condition()
                 return winner
 
@@ -335,22 +376,20 @@ class Game(object):
                 player.reset_player()
                 if is_shown:
                     if winner != -1:
-                        print("\033[31mGame end. Winner is player:", winner)
+                        print(TextColor.CYAN + "Game end. Winner is player: " + str(winner) + TextColor.RESET)
                         params["state"] = 2
                         store_params_to_file()
                     else:
-                        print("\033[31mNo winner. Tie")
+                        print(TextColor.CYAN + "Game end. No winner. Tie" + TextColor.RESET)
                         params["state"] = 2
                         store_params_to_file()
                 return winner, zip(states, mcts_probs, winners_z)
 
+
 def store_params_to_file(filename="params.json"):
-    id = params["id"]
-    abs_dir = os.path.dirname(os.path.abspath(__file__)) + "/Data/"
-    dir = os.path.join(abs_dir, f"{id}_{filename}")
-    filename = dir
     with open(filename, 'w') as file:
         json.dump(params, file)
+
 
 def load_params_from_file(filename="params.json"):
     with open(filename, 'r') as file:
