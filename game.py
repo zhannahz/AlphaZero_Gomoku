@@ -257,12 +257,10 @@ class Game(object):
             # -- Get MCTS probabilities for the current board state.
             move, mcts_probs = player_in_turn.get_action(self.board, return_prob=True)
             self.board.do_move(move)
-
+            self.game_steps += 1
             if current_player == 1:
                 print("Player 1 turn")
                 # Save the board matrix
-                self.game_steps += 1
-                print("Game steps:", self.game_steps)
                 state_matrices = self.board.current_state()
                 player_moves = state_matrices[1]
                 ai_moves = state_matrices[0]
@@ -297,10 +295,10 @@ class Game(object):
             if end:
                 if is_shown:
                     if winner != -1:
-                        print("Game end. Winner is", players[winner])
+                        print("\033[31mGame end. Winner is", players[winner])
                         experiment.update_with_condition()
                     else:
-                        print("Game end. Tie")
+                        print("\033[31mGame end. Tie")
                         experiment.update_with_condition()
                 return winner
 
@@ -337,11 +335,11 @@ class Game(object):
                 player.reset_player()
                 if is_shown:
                     if winner != -1:
-                        print("Winner is player:", winner)
+                        print("\033[31mGame end. Winner is player:", winner)
                         params["state"] = 2
                         store_params_to_file()
                     else:
-                        print("No winner. Tie")
+                        print("\033[31mNo winner. Tie")
                         params["state"] = 2
                         store_params_to_file()
                 return winner, zip(states, mcts_probs, winners_z)
