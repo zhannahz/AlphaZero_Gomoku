@@ -25,10 +25,6 @@ path = r"C:\Users\汉那\gitHubTracking\AlphaZero_Gomoku"
 
 
 def main():
-    #print("\033[31mThis is red text!")
-    #print("\033[32mThis is green text!")
-    #print("\033[0mThis is reset to default color!")
-
     global params
     params = {
         "participant_id": "",
@@ -41,7 +37,10 @@ def main():
         "knobby_complete": False,
         "games_count": 0,
     }
-    inputs = input("Enter parameters for setting up the experiment (space as deliminator): \n")
+    inputs = input("Enter parameters for setting up the experiment (space as deliminator): "
+                   "\n- participant id (pXX)"
+                   "\n- condition (0: block learning, 1: interchange learning) "
+                   "\n- rule to start with (0: four-in-a-row, 1: knobby):\n")
     inputs = inputs.split(" ")
     if len(inputs) != n_inputs:
         print("The experiment needs ", n_inputs, "parameters to set up. Please try again.")
