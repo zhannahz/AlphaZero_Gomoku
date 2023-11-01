@@ -278,10 +278,11 @@ class Game(object):
             if current_player == 1:
                 move, move_probs_fiar, move_probs_knobby, rt = player_in_turn.get_action(self.board,
                                                                                          return_prob=2,
-                                                                                     return_rt=1)
+                                                                                         return_rt=1)
             else:
                 move, move_probs = player_in_turn.get_action(self.board,
-                                                             return_prob=1)
+                                                             return_prob=1,
+                                                             temp=0.75)
 
             self.board.do_move(move)
             self.game_steps += 1
@@ -337,9 +338,11 @@ class Game(object):
                 if is_shown:
                     if winner != -1:
                         print(TextColor.CYAN + "Game end. Winner is " + str(players[winner]) + TextColor.RESET)
+                        params["games_results"].append(winner)
                         experiment.update_with_condition()
                     else:
                         print(TextColor.CYAN + "Game end. No Winner. Tie" + TextColor.RESET)
+                        params["games_results"].append(3)
                         experiment.update_with_condition()
                 return winner
 

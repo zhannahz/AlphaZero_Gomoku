@@ -73,7 +73,6 @@ class Human(object):
                                       n_playout=400)
 
     def get_hidden_probability(self, board, temp):
-        # TODO: get the prob map from another game model too
         move_probs = np.zeros(board.width * board.height)
         acts, probs = self.mcts_hidden.mcts.get_move_probs(board, temp)
         move_probs[list(acts)] = probs

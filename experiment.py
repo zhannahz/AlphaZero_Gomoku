@@ -15,8 +15,8 @@ import shutil
 NUM_INPUTS = 4
 
 #because i have non-english characters in my path, use the raw string
-path = r"C:\Users\汉那\gitHubTracking\AlphaZero_Gomoku"
-
+path = ""
+path_Data = "Data"
 
 class TextColor:
     RED = '\033[91m'
@@ -30,7 +30,7 @@ class TextColor:
     RESET = '\033[0m'
 
 def main():
-    global params
+    global params, path
     params = {
         "participant_id": "",
         "condition": 0,  # 0: block, 1: interchange
@@ -44,6 +44,7 @@ def main():
         "fouriar_complete": False,
         "knobby_complete": False,
         "games_count": 0,
+        "games_results": [],
     }
     inputs = input("Enter parameters for setting up the experiment (space as deliminator): "
                    "\n- participant id (pXX)"
@@ -76,7 +77,7 @@ def main():
         print("Rule to start with is knobby")
 
     print("Current moves left:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
-
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Data")
 
     store_params_to_file()
 
