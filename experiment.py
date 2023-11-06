@@ -11,12 +11,13 @@ import os
 import numpy as np
 import json
 import shutil
+import sys
 
 NUM_INPUTS = 4
 
-#because i have non-english characters in my path, use the raw string
 path = ""
 path_Data = "Data"
+subprocesses = []
 
 class TextColor:
     RED = '\033[91m'
@@ -27,6 +28,7 @@ class TextColor:
     CYAN = '\033[96m'
     WHITE = '\033[97m'
     UNDERLINE = '\033[4m'
+    GREY = "\033[90m"
     RESET = '\033[0m'
 
 def main():
@@ -64,19 +66,19 @@ def main():
         params["moves_knobby"] = int(inputs[3])
         params["max_moves"] = int(inputs[3])
 
-    print("Participant ID: ", params["participant_id"])
+    # print("Participant ID: ", params["participant_id"])
 
-    if params["condition"] == 0:
-        print("Condition is learning by block")
-    else:
-        print("Condition is learning by interchange")
+    # if params["condition"] == 0:
+    #     print("Condition is learning by block")
+    # else:
+    #     print("Condition is learning by interchange")
 
-    if params["model"] == 0:
-        print("Rule to start with is four-in-a-row")
-    else:
-        print("Rule to start with is knobby")
+    # if params["model"] == 0:
+    #     print("Rule to start with is four-in-a-row")
+    # else:
+    #     print("Rule to start with is knobby")
 
-    print("Current moves left:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
+    # print("Current moves left:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Data")
 
     store_params_to_file()
@@ -116,7 +118,7 @@ def start_a_game():
 
     # init
     if params["state"] == 0:
-        print("Current state: init")
+        # print("Current state: init")
         evaluate_game()
         params["state"] = 1
         params["games_count"] += 1
@@ -126,22 +128,26 @@ def start_a_game():
 
     # in_trial
     elif params["state"] == 1:
-        print("Current state: in_trial")
+        # print("Current state: in_trial")
         params["state"] = 2
         store_params_to_file()
         start_a_game()
 
     # idle (between-trials)
     elif params["state"] == 2:
-        print("Current state: idle")
+        # print("Current state: idle")
         if params["moves_fouriar"] <= 0 and params["moves_knobby"] <= 0:
+            print()
             print("All trials completed")
+            print()
             params["state"] = 3
             store_params_to_file()
             start_a_game() # call self to end experiment
 
         else:
+            print()
             print("- - - Starting another game - - -")
+            print()
             evaluate_game()
             params["state"] = 1
             params["games_count"] += 1
@@ -150,7 +156,7 @@ def start_a_game():
             call_human_play()
 
     elif params["state"] == 3:
-        print("Current state: end")
+        # print("Current state: end")
         store_params_to_file()
         end_experiment()
 
@@ -160,6 +166,18 @@ def end_experiment():
     params = load_params_from_file()
     move_files_with_id(params["participant_id"])
     print(TextColor.CYAN + "31mExperiment is complete. Thank you for participating!")
+    # Terminate all subprocesses
+    for sp in subprocesses:
+        try:
+            sp.terminate()  # Send SIGTERM
+            sp.wait()  # Wait for the subprocess to exit
+        except OSError:
+            pass  # Ignore the error if subprocess is already terminated
+
+    # Perform any other cleanup here if necessary
+
+    # Exit the script
+    sys.exit(0)  # or os._exit(0) to exit immediately without cleanup
 
 def evaluate_game():
     global params
@@ -170,18 +188,31 @@ def evaluate_game():
     if (params["moves_knobby"] <= 0):
         params["knobby_complete"] = True
 
-    print("Max moves:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
+    # print("Max moves:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
 
 
 def call_human_play():
     if params["model"] == 0:
-        print(TextColor.CYAN + "Current game rule is four in a row" + TextColor.RESET)
-        params["trials_fouriar"] += 1
-    else:
-        print(TextColor.CYAN + "Current game rule is knobby" + TextColor.RESET)
-        params["trials_knobby"] += 1
-    subprocess.call(['python', 'human_play.py'])
+        confirmation = input(
+            "Current game rule is " + TextColor.CYAN + "four in a row." + TextColor.RESET + " Type 1 and return to continue.")
+        if confirmation == "1":
+            params["trials_fouriar"] += 1
+        else:
+            print("Invalid input. Please try again.")
+            call_human_play()
 
+
+    else:
+        confirmation = input(
+            "Current game rule is " + TextColor.CYAN + "knobby." + TextColor.RESET + " Type 1 and return to continue.")
+        if confirmation == "1":
+            params["trials_knobby"] += 1
+        else:
+            print("Invalid input. Please try again.")
+            call_human_play()
+
+    s = subprocess.call(['python', 'human_play.py'])
+    subprocesses.append(s)
 
 # helper function
 def load_params_from_file(filename="params.json"):
@@ -193,9 +224,6 @@ def store_params_to_file(filename="params.json"):
         json.dump(params, file)
 
 def move_files_with_id(participant_id):
-    # Specify the pattern for files starting with the participant_id
-    pattern = f"{participant_id}_*"
-
     destination_dir = f"Data/{participant_id}/"
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)

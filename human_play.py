@@ -31,10 +31,26 @@ import json
 import time
 import os
 
-four_model = "best_policy_6_6_4_1010_mid.model"
-knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+# four_model = "best_policy_6_6_4_1010_mid.model"
+# knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+four_model = "best_policy_6_6_4_1008.model"
+knobby_model = "best_policy_6_6_knobby_1008.model"
 best_four_model = "best_policy_6_6_4_1008.model"
 best_knobby_model = "best_policy_6_6_knobby_1008.model"
+
+class TextColor:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    UNDERLINE = '\033[4m'
+    GREY = "\033[90m"
+    RESET = '\033[0m'
+
+
 class Human(object):
     """
     human player
@@ -107,7 +123,12 @@ class Human(object):
 
         try:
             rt_start = time.time()
-            location = input("Your move: ")
+            location = input(
+                "Your move ("
+                + TextColor.YELLOW + "row"
+                + TextColor.RESET + ", "
+                + TextColor.BLUE + "column"
+                + TextColor.RESET + "): ")
             if isinstance(location, str):  # for python3
                 location = [int(n, 10) for n in location.split(",")]
             move = board.location_to_move(location)
@@ -120,7 +141,7 @@ class Human(object):
             move = self.get_action(board)
 
         rt = rt_end - rt_start
-        print("Response time: ", rt)
+        # print("Response time: ", rt)
 
         # allow human player get actions to return probabilities too
         if return_prob == 2 and return_rt == 1:

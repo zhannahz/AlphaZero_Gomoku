@@ -25,6 +25,7 @@ class TextColor:
     CYAN = '\033[96m'
     WHITE = '\033[97m'
     UNDERLINE = '\033[4m'
+    GREY = "\033[90m"
     RESET = '\033[0m'
 
 
@@ -240,10 +241,10 @@ class Game(object):
         print("Player", player2, "with O".rjust(3))
         print()
         for x in range(width):
-            print("{0:8}".format(x), end='')
+            print(TextColor.BLUE + "{0:8}".format(x) + TextColor.RESET, end='')
         print('\r\n')
         for i in range(height - 1, -1, -1):
-            print("{0:4d}".format(i), end='')
+            print(TextColor.YELLOW + "{0:4d}".format(i) + TextColor.RESET, end='')
             for j in range(width):
                 loc = i * width + j
                 p = board.states.get(loc, -1)
@@ -253,7 +254,13 @@ class Game(object):
                     print('O'.center(8), end='')
                 else:
                     print('_'.center(8), end='')
-            print('\r\n\r\n')
+
+            # Print row number on the right side followed by a newline
+            print(TextColor.YELLOW + "{0:4d}".format(i) + TextColor.RESET, end='\r\n\r\n')
+
+        for x in range(width):
+            print(TextColor.BLUE + "{0:8}".format(x) + TextColor.RESET, end='')
+        print('\r\n')
 
     def start_play(self, player1, player2, start_player=1, is_shown=1):
         """start a game between two players"""
@@ -282,7 +289,7 @@ class Game(object):
             else:
                 move, move_probs = player_in_turn.get_action(self.board,
                                                              return_prob=1,
-                                                             temp=0.75)
+                                                             temp=0.5)
 
             self.board.do_move(move)
             self.game_steps += 1
@@ -339,10 +346,14 @@ class Game(object):
                     if winner != -1:
                         print(TextColor.CYAN + "Game end. Winner is " + str(players[winner]) + TextColor.RESET)
                         params["games_results"].append(winner)
+                        # print("games_results", params["games_results"])
+                        store_params_to_file()
                         experiment.update_with_condition()
                     else:
                         print(TextColor.CYAN + "Game end. No Winner. Tie" + TextColor.RESET)
                         params["games_results"].append(3)
+                        # print("games_results", params["games_results"])
+                        store_params_to_file()
                         experiment.update_with_condition()
                 return winner
 
