@@ -46,7 +46,10 @@ def main():
         "fouriar_complete": False,
         "knobby_complete": False,
         "games_count": 0,
+        "games_rule": [],
         "games_results": [],
+        "win_rate_fouriar": 0,
+        "win_rate_knobby": 0
     }
     inputs = input("Enter parameters for setting up the experiment (space as deliminator): "
                    "\n- participant id (pXX)"
@@ -89,6 +92,13 @@ def main():
 def update_with_condition(is_first=False):
     global params
     params = load_params_from_file()
+
+    evaluate_game()
+
+    if (params["fouriar_complete"] and params["knobby_complete"]):
+        print("All trials completed")
+        end_experiment()
+        return
 
     # block condition
     if params["condition"] == 0:
@@ -166,6 +176,9 @@ def end_experiment():
     params = load_params_from_file()
     move_files_with_id(params["participant_id"])
     print(TextColor.CYAN + "31mExperiment is complete. Thank you for participating!")
+
+    summary(params)
+
     # Terminate all subprocesses
     for sp in subprocesses:
         try:
@@ -174,10 +187,8 @@ def end_experiment():
         except OSError:
             pass  # Ignore the error if subprocess is already terminated
 
-    # Perform any other cleanup here if necessary
-
     # Exit the script
-    sys.exit(0)  # or os._exit(0) to exit immediately without cleanup
+    sys.exit(0)
 
 def evaluate_game():
     global params
@@ -187,6 +198,8 @@ def evaluate_game():
         params["fouriar_complete"] = True
     if (params["moves_knobby"] <= 0):
         params["knobby_complete"] = True
+
+    store_params_to_file()
 
     # print("Max moves:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
 
@@ -215,6 +228,36 @@ def call_human_play():
     subprocesses.append(s)
 
 # helper function
+
+def summary(params):
+    # Initialize counters for wins in both game types
+    wins_fouriar = 0
+    wins_knobby = 0
+    games_fouriar = 0
+    games_knobby = 0
+
+    # Iterate over the games and count wins and game occurrences for each type
+    for i, rule in enumerate(params['games_rule']):
+        result = params['games_results'][i]
+
+        if rule == 0:  # Rule 0 is for four-in-a-row games
+            games_fouriar += 1
+            if result == 1:  # Result 1 is a win for the human player
+                wins_fouriar += 1
+        elif rule == 1:  # Rule 1 is for knobby games
+            games_knobby += 1
+            if result == 1:  # Result 1 is a win for the human player
+                wins_knobby += 1
+
+    # Calculate win rates for each game type
+    win_rate_fouriar = (wins_fouriar / games_fouriar) * 100 if games_fouriar > 0 else 0
+    win_rate_knobby = (wins_knobby / games_knobby) * 100 if games_knobby > 0 else 0
+    params["win_rate_fouriar"] = win_rate_fouriar
+    params["win_rate_knobby"] = win_rate_knobby
+
+    store_params_to_file()
+
+
 def load_params_from_file(filename="params.json"):
     with open(filename, 'r') as file:
         return json.load(file)
@@ -246,7 +289,7 @@ def board_to_matrix(self):
     """Converts current board state to a matrix representation."""
     matrix = np.zeros((self.width, self.height), dtype=int)
     for move, player in self.states.items():
-        h, w = self.move_to_location(move)
+        h, w = self. move_to_location(move)
         matrix[h][w] = player
     return matrix
 
@@ -264,21 +307,22 @@ def next_filename(base="data"):
     return os.path.join(dir)
 
 
-def save_board_data(data, typename="data"):
+def save_game_data(data, typename="data", threeD=True):
     ext1 = ".npy"
     ext2 = ".txt"
     filename = next_filename(typename)
     filename1 = os.path.join(f"{filename}{ext1}")
     filename2 = os.path.join(f"{filename}{ext2}")
     np.save(filename1, data)
-    with open(filename2, "w") as file:
-        file.write(str(data))
-    #with open(filename, "w") as file:
-        #for item in data_list:
-            #file.write(str(item) + "\n")
-
-    return filename1  # Return the filename to inform the caller about the generated file
-
+    if threeD:
+        with open(filename2, 'w') as outfile:
+            data_converted = np.array(data, dtype=np.float64)
+            for i, slice_ in enumerate(data_converted):
+                np.savetxt(outfile, slice_, fmt='%.9e')
+                outfile.write('\n')  # Separator line for readability
+    else:
+        with open(filename2, "w") as file:
+            file.write(str(data))
 
 if __name__ == "__main__":
     main()

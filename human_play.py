@@ -108,9 +108,9 @@ class Human(object):
         if len(sensible_moves) > 0:
             if return_prob == 2:
                 self.set_hidden_player(board, 0)
-                move_probs_fiar = self.get_hidden_probability(board, temp)
+                move_probs_fiar = self.get_hidden_probability(board, 0.75)
                 self.set_hidden_player(board, 1)
-                move_probs_knobby = self.get_hidden_probability(board, temp)
+                move_probs_knobby = self.get_hidden_probability(board, 0.75)
             elif return_prob == 1:
                 self.set_hidden_player(board, 2)
                 move_probs = self.get_hidden_probability(board, temp)
@@ -133,15 +133,16 @@ class Human(object):
                 location = [int(n, 10) for n in location.split(",")]
             move = board.location_to_move(location)
             rt_end = time.time()
+            rt = rt_end - rt_start
 
         except Exception as e:
             move = -1
         if move == -1 or move not in board.availables:
-            print("invalid move")
-            move = self.get_action(board)
-
-        rt = rt_end - rt_start
-        # print("Response time: ", rt)
+            print("invalid move, please try again.")
+            # move = self.get_action(board)
+            move, move_probs_fiar, move_probs_knobby, rt = self.get_action(board,
+                                                                             return_prob=2,
+                                                                             return_rt=1)
 
         # allow human player get actions to return probabilities too
         if return_prob == 2 and return_rt == 1:
