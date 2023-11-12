@@ -1,0 +1,2100 @@
+2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17
+2.331700031e-17 5.023495435e-04 2.173540239e-03 1.265841528e-03 5.023495435e-04 2.331700031e-17
+2.331700031e-17 5.023495435e-04 9.253357706e-02 2.809332428e-01 5.023495435e-04 2.331700031e-17
+0.000000000e+00 1.265841528e-03 1.695027412e-02 5.993319024e-01 1.265841528e-03 2.331700031e-17
+2.331700031e-17 2.331700031e-17 5.023495435e-04 1.265841528e-03 5.023495435e-04 2.331700031e-17
+2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17 2.331700031e-17
+
+2.405353504e-17 2.405353504e-17 2.405353504e-17 0.000000000e+00 2.405353504e-17 2.405353504e-17
+2.405353504e-17 5.182177032e-04 3.290477309e-03 1.967177342e-01 2.405353504e-17 2.405353504e-17
+2.405353504e-17 2.242197779e-03 0.000000000e+00 1.917052135e-02 2.242197779e-03 2.405353504e-17
+0.000000000e+00 5.708002235e-02 2.265222188e-02 6.716101433e-01 2.405353504e-17 2.405353504e-17
+2.405353504e-17 2.405353504e-17 2.265222188e-02 1.305826785e-03 5.182177032e-04 2.405353504e-17
+2.405353504e-17 2.405353504e-17 2.405353504e-17 2.405353504e-17 2.405353504e-17 2.405353504e-17
+
+2.278987380e-17 2.278987380e-17 2.278987380e-17 0.000000000e+00 2.278987380e-17 2.278987380e-17
+2.278987380e-17 2.278987380e-17 3.843771309e-01 2.278987380e-17 2.278987380e-17 2.278987380e-17
+2.278987380e-17 1.500835372e-02 0.000000000e+00 1.309585429e-01 2.278987380e-17 2.278987380e-17
+0.000000000e+00 2.278987380e-17 0.000000000e+00 2.278987380e-17 2.278987380e-17 2.278987380e-17
+0.000000000e+00 2.278987380e-17 4.696559724e-01 2.278987380e-17 2.278987380e-17 2.278987380e-17
+2.278987380e-17 2.278987380e-17 2.278987380e-17 2.278987380e-17 2.278987380e-17 2.278987380e-17
+
+2.889466290e-17 2.889466290e-17 2.928056576e-01 0.000000000e+00 2.889466290e-17 2.889466290e-17
+2.889466290e-17 2.889466290e-17 2.928056576e-01 2.889466290e-17 2.889466290e-17 2.889466290e-17
+1.333731274e-01 3.952734284e-03 0.000000000e+00 2.889466290e-17 6.062241370e-02 0.000000000e+00
+0.000000000e+00 2.889466290e-17 0.000000000e+00 2.889466290e-17 2.889466290e-17 2.889466290e-17
+0.000000000e+00 2.889466290e-17 0.000000000e+00 2.509829824e-02 6.062241370e-02 2.889466290e-17
+2.889466290e-17 2.889466290e-17 1.239325707e-01 6.787126848e-03 2.889466290e-17 2.889466290e-17
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+nan nan nan nan nan nan
+

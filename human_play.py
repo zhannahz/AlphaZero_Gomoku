@@ -31,10 +31,10 @@ import json
 import time
 import os
 
-# four_model = "best_policy_6_6_4_1010_mid.model"
-# knobby_model = "best_policy_6_6_knobby_1011_mid.model"
-four_model = "best_policy_6_6_4_1008.model"
-knobby_model = "best_policy_6_6_knobby_1008.model"
+four_model = "best_policy_6_6_4_1010_mid.model"
+knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+# four_model = "best_policy_6_6_4_1008.model"
+# knobby_model = "best_policy_6_6_knobby_1008.model"
 best_four_model = "best_policy_6_6_4_1008.model"
 best_knobby_model = "best_policy_6_6_knobby_1008.model"
 

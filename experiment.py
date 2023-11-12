@@ -206,6 +206,9 @@ def evaluate_game():
 
 def call_human_play():
     if params["model"] == 0:
+        print()
+        print()
+        print()
         confirmation = input(
             "Current game rule is " + TextColor.CYAN + "four in a row." + TextColor.RESET + " Type 1 and return to continue.")
         if confirmation == "1":
@@ -216,6 +219,9 @@ def call_human_play():
 
 
     else:
+        print()
+        print()
+        print()
         confirmation = input(
             "Current game rule is " + TextColor.CYAN + "knobby." + TextColor.RESET + " Type 1 and return to continue.")
         if confirmation == "1":
