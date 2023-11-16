@@ -51,7 +51,7 @@ def main():
         "win_rate_fouriar": 0,
         "win_rate_knobby": 0
     }
-    inputs = input("Enter parameters for setting up the experiment (space as deliminator): "
+    inputs = input("Set up the experiment (space as deliminator): "
                    "\n- participant id (pXX)"
                    "\n- condition (0: block learning, 1: interchange learning) "
                    "\n- rule to start with (0: four-in-a-row, 1: knobby):"
@@ -175,7 +175,11 @@ def start_a_game():
 def end_experiment():
     params = load_params_from_file()
     move_files_with_id(params["participant_id"])
-    print(TextColor.CYAN + "31mExperiment is complete. Thank you for participating!")
+    print(TextColor.CYAN + "\nExperiment is complete. Thank you for participating!")
+    print()
+    print()
+    print()
+    print()
 
     summary(params)
 
@@ -200,6 +204,7 @@ def evaluate_game():
         params["knobby_complete"] = True
 
     store_params_to_file()
+    params = load_params_from_file()
 
     # print("Max moves:", "4iar =", params["moves_fouriar"], "knobby =", params["moves_knobby"])
 

@@ -292,7 +292,7 @@ class Game(object):
             else:
                 move, move_probs = player_in_turn.get_action(self.board,
                                                              return_prob=1,
-                                                             temp=0.9)
+                                                             temp=0.85)
 
             self.board.do_move(move)
             self.game_steps += 1

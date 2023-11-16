@@ -31,10 +31,10 @@ import json
 import time
 import os
 
-four_model = "best_policy_6_6_4_1010_mid.model"
-knobby_model = "best_policy_6_6_knobby_1011_mid.model"
-# four_model = "best_policy_6_6_4_1008.model"
-# knobby_model = "best_policy_6_6_knobby_1008.model"
+# four_model = "best_policy_6_6_4_1010_mid.model"
+# knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+four_model = "best_policy_6_6_4_1008.model"
+knobby_model = "best_policy_6_6_knobby_1008.model"
 best_four_model = "best_policy_6_6_4_1008.model"
 best_knobby_model = "best_policy_6_6_knobby_1008.model"
 
@@ -124,11 +124,11 @@ class Human(object):
         try:
             rt_start = time.time()
             location = input(
-                "Your move ("
+                "Your move, type "
                 + TextColor.YELLOW + "row"
-                + TextColor.RESET + ", "
+                + TextColor.RESET + ","
                 + TextColor.BLUE + "column"
-                + TextColor.RESET + "): ")
+                + TextColor.RESET + ": ")
             if isinstance(location, str):  # for python3
                 location = [int(n, 10) for n in location.split(",")]
             move = board.location_to_move(location)
@@ -210,7 +210,7 @@ def run():
         human = Human()
 
         # set start_player=0 for human first
-        game.start_play(human, mcts_player, start_player=1, is_shown=1)
+        game.start_play(human, mcts_player, start_player=0, is_shown=1)
     except KeyboardInterrupt:
         print('\n\rquit')
 
