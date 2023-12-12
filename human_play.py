@@ -11,6 +11,7 @@ import pickle
 
 import numpy as np
 
+import random
 from game import Board, Game
 from mcts_pure import MCTSPlayer as MCTS_Pure
 from mcts_alphaZero import MCTSPlayer
@@ -209,8 +210,11 @@ def run():
         # human player, input your move in the format: 2,3
         human = Human()
 
-        # set start_player=0 for human first
-        game.start_play(human, mcts_player, start_player=0, is_shown=1)
+        # set start_player=0 for human first, =1 for AI first
+        random.seed(time.time())
+        player_sequence = random.choice([0, 1])
+        game.start_play(human, mcts_player, start_player=player_sequence, is_shown=1)
+
     except KeyboardInterrupt:
         print('\n\rquit')
 

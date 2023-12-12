@@ -293,8 +293,8 @@ def move_files_with_id(participant_id):
             shutil.move(f, destination_dir)
 
     # Also move the params.json file
-    if os.path.exists("params.json"):
-        shutil.move("params.json", destination_dir)
+    if os.path.exists("Data/p14/params.json"):
+        shutil.move("Data/p14/params.json", destination_dir)
 
 def board_to_matrix(self):
     """Converts current board state to a matrix representation."""
