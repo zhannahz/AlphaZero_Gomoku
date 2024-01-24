@@ -1,6 +1,12 @@
 import os
 import json
 from collections import defaultdict
+import matplotlib.pyplot as plt
+
+
+deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11']
+win_four = []
+win_knobby = []
 
 def find_duplicate_params(folder_path):
     params_dict = defaultdict(list)
@@ -17,8 +23,12 @@ def find_duplicate_params(folder_path):
     return duplicate_params
 
 def calculate_win_rate(params_path):
+    global win_four, win_knobby
     with open(params_path, 'r') as file:
         params_data = json.load(file)
+
+    if (params_data['participant_id'] in deprecated_id):
+        return
 
     # Extract relevant information
     games_condition = params_data.get('condition', 0)
@@ -50,20 +60,62 @@ def calculate_win_rate(params_path):
     win_rate_knobby = win_count_knobby / game_count_knobby if game_count_knobby > 0 else 0
 
     print(params_data['participant_id']," fouriar:", win_rate_four, "knobby:", win_rate_knobby)
+
     # Update the existing params_data with the calculated win rates
     params_data['win_rate_fouriar'] = win_rate_four
     params_data['win_rate_knobby'] = win_rate_knobby
 
-# Get the current script's directory (Data in your case)
+    # still need to write the updated params_data to the file
+
+    win_four.append(win_rate_four)
+    win_knobby.append(win_rate_knobby)
+
+    # Plotting
+    # groupped_results = calculate_staircase_win_rate(games_results)
+    # draw_plot(list(range(1, len(groupped_results) + 1)), groupped_results, "game count (group=5)", "win rate", params_data['participant_id'], "Overall")
+    # draw_plot(game_count_knobby, win_count_knobby, "game count", "win count", params_data['participant_id'], "Knobby")
+
+def calculate_staircase_win_rate(results):
+    starcase_wins = []
+    group_size = 5
+    # calculate win rate for each group
+    for i in range(0, len(results), group_size):
+        if (i > len(results) - group_size):
+            group = results[i:]
+            group_win = sum(result == 1 for result in group) / len(group)
+        else:
+            group = results[i:i + group_size]
+            group_win = sum(result == 1 for result in group) / group_size
+        starcase_wins.append(group_win)
+    return starcase_wins
+
+def draw_plot(x, y, x_label, y_label, title, label):
+    plt.scatter(x, y, label=label)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
+    plt.legend()
+    plt.show()
+
 path = os.path.dirname(os.path.realpath(__file__))
 data_folder = path
-#print("data_folder", data_folder)
 
-# Example usage:
+# get win rates from params
 duplicates = find_duplicate_params(data_folder)
-#print("duplicates", duplicates)
-
 for file_name, file_paths in duplicates.items():
     print(f"File '{file_name}' found in multiple subfolders:")
     for path in file_paths:
         calculate_win_rate(path)
+
+    # calculate average win rate in fouriar and knobby conditions
+    avg_win_four = 0
+    avg_win_knobby = 0
+    for win in win_four:
+        avg_win_four += win
+    avg_win_four = avg_win_four / len(win_four)
+    for win in win_knobby:
+        avg_win_knobby += win
+    avg_win_knobby = avg_win_knobby / len(win_knobby)
+
+    # print average win rate for each condition
+    print("\noverall fouriar:", avg_win_four, "knobby:", avg_win_knobby)
