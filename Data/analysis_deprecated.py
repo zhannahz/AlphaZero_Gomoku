@@ -103,7 +103,7 @@ data_folder = path
 # get win rates from params
 duplicates = find_duplicate_params(data_folder)
 for file_name, file_paths in duplicates.items():
-    print(f"File '{file_name}' found in multiple subfolders:")
+    print(f"File '{file_name}' found in {file_paths}")
     for path in file_paths:
         calculate_win_rate(path)
 
