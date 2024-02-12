@@ -9,12 +9,15 @@ from numpy.polynomial import Polynomial
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11']
 params_list = []
-group_blocked = []
-group_interleaved = []
-sum_blocked = [0] * 50
-sum_interleaved = [0] * 50
-win_rate_blocked = []
-win_rate_interleaved = []
+paths_blocked = []
+paths_interleaved = []
+id_blocked = []
+id_interleaved = []
+
+win_rate_blocked_1 = []
+win_rate_interleaved_1 = []
+win_rate_blocked_2 = []
+win_rate_interleaved_2 = []
 
 root = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,29 +25,6 @@ root = os.path.dirname(os.path.realpath(__file__))
 # return
 # 1) the prob number
 # 2) the move position
-def get_board_prob(id, round):
-    global root
-
-    i = str(round)
-    file_probKnobby = id+"_probKnobby_"+i+".npy"
-    file_probFour = id+"_probFouriar_"+i+".npy"
-    path_k = os.path.join(root, f"{id}/{file_probKnobby}")
-    path_f = os.path.join(root, f"{id}/{file_probFour}")
-    probKnobby = np.load(path_k, allow_pickle=True)
-    probFour = np.load(path_f, allow_pickle=True)
-
-    # get the location and value of the probability that's not 0
-    fmove_K = probKnobby[0]
-    fmove_F = probFour[0]
-
-    # Find the position (row, column) and value
-    max_position_K = np.unravel_index(np.argmax(fmove_K), fmove_K.shape)
-    max_value_K = fmove_K[max_position_K]
-    max_position_F = np.unravel_index(np.argmax(fmove_F), fmove_F.shape)
-    max_value_F = fmove_F[max_position_F]
-
-    return max_value_K, max_position_K, max_value_F, max_position_F
-
 
 def find_duplicate_params():
     global root
@@ -65,7 +45,7 @@ def find_duplicate_params():
 
 # group data by condition (blocked=0 vs interleaved=1)
 def group_by_condition(params_list):
-    global group_blocked, group_interleaved
+    global paths_blocked, paths_interleaved
 
     for file_name, file_paths in params_list.items():
         for path in file_paths:
@@ -73,11 +53,14 @@ def group_by_condition(params_list):
                 params_data = json.load(file)
 
             condition = params_data.get('condition', 0)
+            this_id = params_data.get('participant_id', 0)
             if condition == 0:
-                group_blocked.append(path)
+                paths_blocked.append(path)
+                id_blocked.append(this_id)
             else:
-                group_interleaved.append(path)
-
+                paths_interleaved.append(path)
+                id_interleaved.append(this_id)
+    print("blocked ids", id_blocked, "\ninterleaved ids", id_interleaved)
 
 # return
 # 1) the first game rule played
@@ -91,19 +74,16 @@ def calculate_win(params_path):
         return None, None, None
 
     # Extract relevant information
+    id = params_data['participant_id']
     games_condition = params_data.get('condition', 0) # 0 = blcok, 1 = interleaved
     games_rule = params_data.get('games_rule', [])
     games_results = params_data.get('games_results', [])
     games_count = params_data.get('games_count', 0)
 
-    # Calculate overall win rate
-    # win_rate_overall = sum(result == 1 for result in games_results) / games_count
-
-    # Judge which game is played first
+    # which game is played first
     first_game = games_rule[0]
 
     # List of all win games
-    # Initialize lists for results of each game type
     results_four = []
     results_knobby = []
 
@@ -119,138 +99,83 @@ def calculate_win(params_path):
     else:
         return first_game, results_knobby, results_four
 
-def main():
-    global params_list, group_blocked, group_interleaved, sum_blocked, sum_interleaved
-
-    params_list = find_duplicate_params()
-    group_by_condition(params_list)
-
-    data_blocked = []
-    data_interleaved = []
-
-    # Calculate win rates for blocked condition
-    for params_path in group_blocked:
-        first_game, results_knobby, results_four = calculate_win(params_path)
-        if (first_game == 0):
-            data_blocked.append(results_four)
-        elif (first_game == 1):
-            data_blocked.append(results_knobby)
-
-    # Calculate win rates for interleaved condition
-    for params_path in group_interleaved:
-        first_game, results_knobby, results_four = calculate_win(params_path)
-        if (first_game == 0):
-            data_interleaved.append(results_four)
-        elif (first_game == 1):
-            data_interleaved.append(results_knobby)
-
-    # print("data blocked: ", data_blocked)
-    # print("data interleaved: ", data_interleaved)
-
-# BLOCKED
-    count = [0] * 50
-    n = len(data_blocked)
-
-    for i in range(n):
-        result = data_blocked[i]
-        result = [0 if r != 1 else 1 for r in result] # keep only the 1s (human wins)
-        for j in range(len(result)):
-            sum_blocked[j] += result[j]
-            count[j] += 1
-
-    # Trim to remove trailing zeros
-    count = count[:next((i for i, x in enumerate(reversed(count)) if x != 0), len(count))]
-    count = [x for x in count if x == 7]
-    sum_blocked = sum_blocked[:next((i for i, x in enumerate(reversed(sum_blocked)) if x != 0), len(sum_blocked))]
-
-    print("sum_blocked: ", sum_blocked)
-    print("count: ", count)
-
-    for i in range(len(sum_blocked)):
-        if i < len(count) and i < len(sum_blocked):
-            w = round(sum_blocked[i] / count[i], 3)
-            # print("w: ", w, " at ", i, "(", sum_blocked[i], "/", count[i], ")" )
-            win_rate_blocked.append(w)
-
-# INTERLEAVED
-    count = [0] * 50
-    n = len(data_interleaved)
-
-    for i in range(n):
-        result = data_interleaved[i]
-        result = [0 if r != 1 else 1 for r in result]
-        for j in range(len(result)):
-            sum_interleaved[j] += result[j]
-            count[j] += 1
-
-    # Trim to remove trailing zeros
-    count = count[:next((i for i, x in enumerate(reversed(count)) if x != 0), len(count))]
-    count = [x for x in count if x == 7]
-    sum_interleaved = sum_interleaved[:next((i for i, x in enumerate(reversed(sum_interleaved)) if x != 0), len(sum_interleaved))]
-    print("sum_interleaved: ", sum_interleaved)
-    print("count: ", count)
-
-    for i in range(len(sum_interleaved)):
-        if i < len(count) and i < len(sum_interleaved):
-            w = round(sum_interleaved[i] / count[i], 3)
-            win_rate_interleaved.append(w)
-
-    plot_win_rate()
-
-
-def calculate_win_rate_all(sum_data):
+# return the win rate for all games
+# given the cumulative results
+def get_win_rate_all(data):
     win_rate = []
+    sum_win = [0] * 50
     count = [0] * 50
-    n = len(sum_data)
+    n = len(data)
+
     for i in range(n):
-        result = sum_data[i]
+        result = data[i]
         result = [0 if r != 1 else 1 for r in result]
         for j in range(len(result)):
-            sum_data[j] += result[j]
+            sum_win[j] += result[j]
             count[j] += 1
+
     count = count[:next((i for i, x in enumerate(reversed(count)) if x != 0), len(count))]
     count = [x for x in count if x == 7]
-    sum_data = sum_data[:next((i for i, x in enumerate(reversed(sum_data)) if x != 0), len(sum_data))]
-    for i in range(len(sum_data)):
-        if i < len(count) and i < len(sum_data):
-            w = round(sum_data[i] / count[i], 3)
+    sum_win = sum_win[:next((i for i, x in enumerate(reversed(sum_win)) if x != 0), len(sum_win))]
+
+    for i in range(len(sum_win)):
+        if i < len(count) and i < len(sum_win):
+            w = round(sum_win[i] / count[i], 3)
             win_rate.append(w)
 
     return win_rate
 
+# Plot 4 figures:
+# win rates for blocked & interleaved conditions
+# in the first & second games
 def plot_win_rate():
-    global win_rate_blocked, win_rate_interleaved
+    global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 8), sharex=True, sharey=True)
+    fig, ((ax1_1, ax1_2), (ax2_1, ax2_2)) = plt.subplots(2, 2, figsize=(16, 8), sharex=True, sharey=True)
 
     # Create x-axis
-    x1 = list(range(1, len(win_rate_blocked) + 1))
-    x2 = list(range(1, len(win_rate_interleaved) + 1))
+    x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
+    x2_1 = list(range(1, len(win_rate_interleaved_1) + 1))
+    x1_2 = list(range(1, len(win_rate_blocked_2) + 1))
+    x2_2 = list(range(1, len(win_rate_interleaved_2) + 1))
+    # print("x1_1", x1_1, "x2_1", x2_1, "x1_2", x1_2, "x2_2", x2_2)
 
-    # Fitting a 3rd-degree polynomial
-    poly_1 = np.poly1d(np.polyfit(x1, win_rate_blocked, 3))
-    smooth_1 = poly_1(x1)
-    poly_2 = np.poly1d(np.polyfit(x2, win_rate_interleaved, 3))
-    smooth_2 = poly_2(x2)
+    # Fitting polynomial
+    poly_1_1 = np.poly1d(np.polyfit(x1_1, win_rate_blocked_1, 3))
+    smooth_b1 = poly_1_1(x1_1)
+    poly_2_1 = np.poly1d(np.polyfit(x2_1, win_rate_interleaved_1, 3))
+    smooth_i1 = poly_2_1(x2_1)
+    poly_1_2 = np.poly1d(np.polyfit(x1_2, win_rate_blocked_2, 3))
+    smooth_b2 = poly_1_2(x1_2)
+    poly_2_2 = np.poly1d(np.polyfit(x2_2, win_rate_interleaved_2, 3))
+    smooth_i2 = poly_2_2(x2_2)
 
-    ax1.plot(x1, win_rate_blocked, label="Blocked")
-    ax1.plot(x1, smooth_1, label='Blocked*', color='red')
+    # Blocked condition
+    ax1_1.plot(x1_1, win_rate_blocked_1, label="Win rate (raw)")
+    ax1_1.plot(x1_1, smooth_b1, color='red')
+    ax1_2.plot(x1_2, win_rate_blocked_2, label="Win rate (raw)")
+    ax1_2.plot(x1_2, smooth_b2, color='red')
 
-    ax2.plot(x2, win_rate_interleaved, label="Interleaved")
-    ax2.plot(x2, smooth_2, label='Interleaved*', color='red')
+    # Interleaved condition
+    ax2_1.plot(x2_1, win_rate_interleaved_1, label="Win rate (raw)")
+    ax2_1.plot(x2_1, smooth_i1, color='red')
+    ax2_2.plot(x2_2, win_rate_interleaved_2, label="Win rate (raw)")
+    ax2_2.plot(x2_2, smooth_i2, color='red')
 
     # Add title and labels
-    ax1.set_title("Block-learning")
-    ax1.set_xlabel("Game Count")
-    ax1.set_ylabel("Win rate")
+    ax1_1.set_title("Block-learning (first game)")
+    ax1_2.set_title("Block-learning (second game)")
 
-    ax2.set_title("Interleaved-learning")
-    ax2.set_xlabel("Game Count")
-    ax2.set_ylabel("Interleaved")
+    ax2_1.set_title("Interleaved-learning (first game)")
+    ax2_1.set_xlabel("Game Count")
+    ax2_1.set_ylabel("Win rate")
+    ax2_2.set_title("Interleaved-learning (second game)")
 
     # Add legend
-    ax1.legend()
-    ax2.legend()
+    ax1_1.legend()
+    ax1_2.legend()
+    ax2_1.legend()
+    ax2_2.legend()
 
     # Adjust layout to prevent overlapping
     plt.tight_layout()
@@ -258,9 +183,124 @@ def plot_win_rate():
     # Show plot
     plt.show()
 
+def get_all_move_prob(id):
+    global root
+
+    all_moves_k = []
+    all_moves_f = []
+
+    for round in range(1, 50):
+        i = str(round)
+        file_probKnobby = id+"_probKnobby_"+i+".npy"
+        file_probFour = id+"_probFouriar_"+i+".npy"
+        file_move = id+"_boardDifference_"+i+".npy"
+        path_k = os.path.join(root, f"{id}\\{file_probKnobby}")
+        path_f = os.path.join(root, f"{id}\\{file_probFour}")
+        path_move = os.path.join(root, f"{id}\\{file_move}")
+        # check if the file exists
+        if not os.path.exists(path_k) or not os.path.exists(path_f) or not os.path.exists(path_move):
+            continue
+        else:
+            probKnobby = np.load(path_k, allow_pickle=True)
+            probFour = np.load(path_f, allow_pickle=True)
+            move = np.load(path_move, allow_pickle=True)
+
+        for m in range(len(move)):
+            step = move[m][1] - move[m][0]
+
+
+        # keep only the non-zero matrices
+        probKnobby = np.array([x for x in probKnobby if np.count_nonzero(x) > 0])
+        probFour = np.array([x for x in probFour if np.count_nonzero(x) > 0])
+        # print("probKnobby", probKnobby.shape, "probFour", probFour.shape)
+
+        for k in probKnobby:
+            all_moves_k.append(k)
+        for f in probFour:
+            all_moves_f.append(f)
+
+        # Find the position (row, column) and value
+        # for move in all_moves_k:
+        #     max_position_K = np.unravel_index(np.argmax(move), move.shape)
+        #     max_value_K = move[max_position_K]
+        # for move in all_moves_f:
+        #     max_position_F = np.unravel_index(np.argmax(move), move.shape)
+        #     max_value_F = move[max_position_F]
+
+    return all_moves_f, all_moves_k
+
+
+def main():
+    global params_list, \
+        paths_blocked, \
+        paths_interleaved, \
+        sum_blocked, \
+        sum_interleaved, \
+        win_rate_blocked_1, \
+        win_rate_interleaved_1, \
+        win_rate_blocked_2, \
+        win_rate_interleaved_2, \
+        id_blocked, \
+        id_interleaved
+
+    # test
+    # f, k = get_all_move_prob("p27")
+
+    # Find params in each folder
+    params_list = find_duplicate_params()
+    
+    # Group data by condition (blocked vs interleaved)
+    group_by_condition(params_list)
+
+    data_blocked_1 = []
+    data_interleaved_1 = []
+    data_blocked_2 = []
+    data_interleaved_2 = []
+
+    count_first_4iar = 0
+    count_first_knobby = 0
+    # Retrieve first & second game results for blocked condition
+    for params_path in paths_blocked:
+        first_game, results_knobby, results_four = calculate_win(params_path)
+        if (first_game == 0):
+            data_blocked_1.append(results_four)
+            data_blocked_2.append(results_knobby)
+            count_first_4iar += 1
+        elif (first_game == 1):
+            data_blocked_1.append(results_knobby)
+            data_blocked_2.append(results_four)
+            count_first_knobby += 1
+    print("count_first_4iar", count_first_4iar, "count_first_knobby", count_first_knobby)
+
+    # Retrieve first & second game results for interleaved condition
+    for params_path in paths_interleaved:
+        first_game, results_knobby, results_four = calculate_win(params_path)
+        if (first_game == 0):
+            data_interleaved_1.append(results_four)
+            data_interleaved_2.append(results_knobby)
+        elif (first_game == 1):
+            data_interleaved_1.append(results_knobby)
+            data_interleaved_2.append(results_four)
+
+    win_rate_blocked_1 = get_win_rate_all(data_blocked_1)
+    win_rate_interleaved_1 = get_win_rate_all(data_interleaved_1)
+    win_rate_blocked_2 = get_win_rate_all(data_blocked_2)
+    win_rate_interleaved_2 = get_win_rate_all(data_interleaved_2)
+
+    plot_win_rate()
+
+
+    # Retrieve the probability of all 100 moves for each condition
+    # for id in id_blocked:
+    #     for i in range(1, 47):
+    #         a, b, c, d = get_all_move_prob(id, i)
+    #         print(f"round {i}")
+
+
+
 # given a id and a given game, retrieve the move prob for that game
 # for t in range(1, 47):
-#     a, b, c, d = get_board_prob("p27", t)
+#     a, b, c, d = get_all_move_prob("p27", t)
 #     print(f"round {t}")
 
 if __name__ == "__main__":
