@@ -1,3 +1,4 @@
+import math
 import os
 import numpy as np
 import json
@@ -7,7 +8,7 @@ from numpy.polynomial import Polynomial
 
 
 
-deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11']
+deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
 params_list = []
 paths_blocked = []
 paths_interleaved = []
@@ -30,12 +31,15 @@ def find_duplicate_params():
     global root
 
     params_dict = defaultdict(list)
-
-    for root, dirs, files in os.walk(root):
+    temp_root = root
+    for temp_root, dirs, files in os.walk(temp_root):
         for file_name in files:
             if file_name == 'params.json':
-                params_path = os.path.join(root, file_name)
-                params_dict[file_name].append(params_path)
+                params_path = os.path.join(temp_root, file_name)
+                # Extract participant ID from the file path
+                participant_id = os.path.basename(os.path.dirname(params_path))
+                if (participant_id not in deprecated_id):
+                    params_dict[file_name].append(params_path)
 
     # Filter out items in the dictionary where the values are not unique
     duplicate_params = {k: v for k, v in params_dict.items() if len(v) > 1}
@@ -80,6 +84,8 @@ def calculate_win(params_path):
     games_results = params_data.get('games_results', [])
     games_count = params_data.get('games_count', 0)
 
+    if games_rule == []: #
+        print("No games_rule for", id)
     # which game is played first
     first_game = games_rule[0]
 
@@ -110,20 +116,22 @@ def get_win_rate_all(data):
     for i in range(n):
         result = data[i]
         result = [0 if r != 1 else 1 for r in result]
-        for j in range(len(result)):
+        for j in range(len(result)): # j = game number
             sum_win[j] += result[j]
             count[j] += 1
 
-    count = count[:next((i for i, x in enumerate(reversed(count)) if x != 0), len(count))]
-    count = [x for x in count if x == 7]
-    sum_win = sum_win[:next((i for i, x in enumerate(reversed(sum_win)) if x != 0), len(sum_win))]
+    while count and count[-1] == 0:
+        count.pop()
+    max = count[0]
+    count = [x for x in count if x == max] # make sure to look at the same number of games for each participant
+    sum_win = sum_win[:len(count)] # slice to the same length as count
 
     for i in range(len(sum_win)):
-        if i < len(count) and i < len(sum_win):
+        if count[i] != 0:
             w = round(sum_win[i] / count[i], 3)
             win_rate.append(w)
 
-    return win_rate
+    return win_rate, max
 
 # Plot 4 figures:
 # win rates for blocked & interleaved conditions
@@ -132,6 +140,11 @@ def plot_win_rate():
     global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2
 
     fig, ((ax1_1, ax1_2), (ax2_1, ax2_2)) = plt.subplots(2, 2, figsize=(16, 8), sharex=True, sharey=True)
+
+    # print("win_rate_blocked_1", win_rate_blocked_1)
+    # print("win_rate_interleaved_1", win_rate_interleaved_1)
+    # print("win_rate_blocked_2", win_rate_blocked_2)
+    # print("win_rate_interleaved_2", win_rate_interleaved_2)
 
     # Create x-axis
     x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
@@ -186,17 +199,26 @@ def plot_win_rate():
 def get_all_move_prob(id):
     global root
 
-    all_moves_k = []
-    all_moves_f = []
+    all_moves_dict = defaultdict(list)
+    all_prob_dict = defaultdict(list)
 
-    for round in range(1, 50):
+    # iterate through all games played by the participant
+    for round in range(1, 60): #60 is the max #games played so far
+        # create a dictionary to store the move and prob for each round/game
+        move_dict = defaultdict(list)
+        prob_dict = defaultdict(list)
+
         i = str(round)
         file_probKnobby = id+"_probKnobby_"+i+".npy"
         file_probFour = id+"_probFouriar_"+i+".npy"
         file_move = id+"_boardDifference_"+i+".npy"
+
         path_k = os.path.join(root, f"{id}\\{file_probKnobby}")
         path_f = os.path.join(root, f"{id}\\{file_probFour}")
         path_move = os.path.join(root, f"{id}\\{file_move}")
+        # print("root", root, "id", id)
+        # print("path_k", path_k, "path_f", path_f, "path_move", path_move)
+
         # check if the file exists
         if not os.path.exists(path_k) or not os.path.exists(path_f) or not os.path.exists(path_move):
             continue
@@ -205,30 +227,94 @@ def get_all_move_prob(id):
             probFour = np.load(path_f, allow_pickle=True)
             move = np.load(path_move, allow_pickle=True)
 
-        for m in range(len(move)):
-            step = move[m][1] - move[m][0]
+        move = move[:20] # all participants finish within 20 moves, so remove redundant 0s
+        n_steps = len(move)
+        for s in range(n_steps):
+            if np.all(move[s][0] == None) or np.all(move[s][1] == None):
+                continue
+            step = move[s][1] - move[s][0]
+            move_dict[s] = step
+            prob_dict[s] = probFour[s], probKnobby[s]
+
+        # print("move_dict size:", len(move_dict), "for round", i)
+        # print("prob_dict size:", len(prob_dict), "for round", i)
+
+        n = len(all_moves_dict)
+        for i in range(len(move_dict)):
+            all_moves_dict[n+i] = move_dict[i]
+            all_prob_dict[n+i] = prob_dict[i]
+
+    # mask the probability matrices with the move matrices
+    for m in range(0, len(all_moves_dict)):
+        move = all_moves_dict[m]
+        mask = move.astype(bool)
+        all_prob_dict[m] = [all_prob_dict[m][0][mask], all_prob_dict[m][1][mask]]
 
 
-        # keep only the non-zero matrices
-        probKnobby = np.array([x for x in probKnobby if np.count_nonzero(x) > 0])
-        probFour = np.array([x for x in probFour if np.count_nonzero(x) > 0])
-        # print("probKnobby", probKnobby.shape, "probFour", probFour.shape)
+    return all_prob_dict, all_moves_dict
 
-        for k in probKnobby:
-            all_moves_k.append(k)
-        for f in probFour:
-            all_moves_f.append(f)
+def plot_move_prob_comparison(data_prob):
+    x = list(range(1, len(data_prob) + 1)) # move number (about 100*2=200)
+    y1 = [] # move prob for first rule
+    for i in range(len(data_prob)):
+        y1.append(data_prob[i][0])
+    y2 = [] # move prob for second rule
+    for i in range(len(data_prob)):
+        y2.append(data_prob[i][1])
 
-        # Find the position (row, column) and value
-        # for move in all_moves_k:
-        #     max_position_K = np.unravel_index(np.argmax(move), move.shape)
-        #     max_value_K = move[max_position_K]
-        # for move in all_moves_f:
-        #     max_position_F = np.unravel_index(np.argmax(move), move.shape)
-        #     max_value_F = move[max_position_F]
+    print("x size:", len(x), "y1 size:", len(y1), "y2 size:", len(y2))
 
-    return all_moves_f, all_moves_k
+    # plot the move prob for the first rule
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
+    ax1.plot(x, y1, label="First Rule")
+    ax1.set_xlabel('Move Number')
+    ax1.set_ylabel('Probability')
+    ax1.set_title('Move Probability (Block-Learning)')
+    ax1.legend()
+    # plot the move prob for the second rule
+    ax2.plot(x, y2, label="Second Rule")
+    ax2.set_xlabel('Move Number')
+    ax2.set_ylabel('Probability')
+    ax2.legend()
+    plt.show()
 
+    return
+
+def normalize_probability(prob):
+    for i in range(len(prob)):
+        max_prob = max(prob[i][0], prob[i][1])
+        if (max_prob == 0):
+            # print("max_prob is 0 at move", i, "prob[i]", prob[i])
+            continue
+        prob[i] = [prob[i][0] / max_prob, prob[i][1] / max_prob]
+    return prob
+def check_data_quality(all_data):
+    # a dictionary to store the win rate for each participant
+    win_rate_dict = {}
+
+    for file_name, file_paths in all_data.items():
+        for path in file_paths:
+            with open(path, 'r') as file:
+                data = json.load(file)
+            if (data['participant_id'] not in deprecated_id):
+                # calculate individual win rate
+                results = data.get('games_results', [])
+                win_result = [0 if r != 1 else 1 for r in results]
+                game_total = len(results)
+                win_rate = round(sum(win_result) / game_total, 3)
+
+                # print("id", data['participant_id'], "win_rate", win_rate, "for game_total", game_total)
+
+                win_rate_dict[data['participant_id']] = win_rate
+
+    # plot win rate distribution
+    n_bin = round(math.sqrt(len(win_rate_dict)))
+    plt.hist(win_rate_dict.values(), bins=5, alpha=0.5, color='black', edgecolor='white')
+    plt.xlabel('Win Rate (within individual)')
+    plt.ylabel('Frequency')
+    plt.yticks(range(0, 10, 1))
+    plt.title('Win Rate Distribution (n={})'.format(len(win_rate_dict)))
+    plt.show()
 
 def main():
     global params_list, \
@@ -243,65 +329,79 @@ def main():
         id_blocked, \
         id_interleaved
 
-    # test
-    # f, k = get_all_move_prob("p27")
-
     # Find params in each folder
     params_list = find_duplicate_params()
+
+    # test overall data quality
+    check_data_quality(params_list)
     
     # Group data by condition (blocked vs interleaved)
     group_by_condition(params_list)
 
+    # people's first game results and second game results
     data_blocked_1 = []
     data_interleaved_1 = []
     data_blocked_2 = []
     data_interleaved_2 = []
 
-    count_first_4iar = 0
-    count_first_knobby = 0
+    # how many people played a specific game first in a condition
+    count_blocked_first_4iar = 0
+    count_blocked_first_knobby = 0
+    count_mix_first_4iar = 0
+    count_mix_first_knobby = 0
+
     # Retrieve first & second game results for blocked condition
     for params_path in paths_blocked:
         first_game, results_knobby, results_four = calculate_win(params_path)
         if (first_game == 0):
             data_blocked_1.append(results_four)
             data_blocked_2.append(results_knobby)
-            count_first_4iar += 1
+            count_blocked_first_4iar += 1
         elif (first_game == 1):
             data_blocked_1.append(results_knobby)
             data_blocked_2.append(results_four)
-            count_first_knobby += 1
-    print("count_first_4iar", count_first_4iar, "count_first_knobby", count_first_knobby)
-
+            count_blocked_first_knobby += 1
+    print("block-learning", len(paths_blocked))
+    print("4iar first:", count_blocked_first_4iar, "knobby first:", count_blocked_first_knobby)
     # Retrieve first & second game results for interleaved condition
     for params_path in paths_interleaved:
         first_game, results_knobby, results_four = calculate_win(params_path)
         if (first_game == 0):
             data_interleaved_1.append(results_four)
             data_interleaved_2.append(results_knobby)
+            count_mix_first_4iar += 1
         elif (first_game == 1):
             data_interleaved_1.append(results_knobby)
             data_interleaved_2.append(results_four)
+            count_mix_first_knobby += 1
+    print("interleaved-learning", len(paths_interleaved))
+    print("4iar first:", count_mix_first_4iar, "knobby first:", count_mix_first_knobby)
 
-    win_rate_blocked_1 = get_win_rate_all(data_blocked_1)
-    win_rate_interleaved_1 = get_win_rate_all(data_interleaved_1)
-    win_rate_blocked_2 = get_win_rate_all(data_blocked_2)
-    win_rate_interleaved_2 = get_win_rate_all(data_interleaved_2)
+    win_rate_blocked_1, max_b_1 = get_win_rate_all(data_blocked_1)
+    win_rate_interleaved_1, max_i_1 = get_win_rate_all(data_interleaved_1)
+    win_rate_blocked_2, max_b_2 = get_win_rate_all(data_blocked_2)
+    win_rate_interleaved_2, max_i_2 = get_win_rate_all(data_interleaved_2)
+
+    print("block's 1st rule total # games - ", len(win_rate_blocked_1), "at least have # games", max_b_1)
+    print("interleaved's 1st rule total # - ", len(win_rate_interleaved_1), "at least have # games", max_i_1)
+    print("block's 2nd rule total # games - ", len(win_rate_blocked_2), "at least have # games", max_b_2)
+    print("interleaved's 2nd rule total # - ", len(win_rate_interleaved_2), "at least have # games", max_i_2)
 
     plot_win_rate()
 
 
     # Retrieve the probability of all 100 moves for each condition
-    # for id in id_blocked:
-    #     for i in range(1, 47):
-    #         a, b, c, d = get_all_move_prob(id, i)
-    #         print(f"round {i}")
+
+    for id in id_blocked:
+        prob, move = get_all_move_prob(id)
+        prob = normalize_probability(prob)
+        plot_move_prob_comparison(prob)
+        print("id", id)
+
+    for id in id_interleaved:
+        get_all_move_prob(id)
 
 
-
-# given a id and a given game, retrieve the move prob for that game
-# for t in range(1, 47):
-#     a, b, c, d = get_all_move_prob("p27", t)
-#     print(f"round {t}")
 
 if __name__ == "__main__":
     main()
