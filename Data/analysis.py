@@ -22,6 +22,9 @@ win_rate_interleaved_1 = []
 win_rate_blocked_2 = []
 win_rate_interleaved_2 = []
 
+aggregated_y1 = []
+aggregated_y2 = []
+
 root = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -358,7 +361,7 @@ def main():
     count_mix_first_4iar = 0
     count_mix_first_knobby = 0
 
-    # Retrieve first & second game results for blocked condition
+    # 1) compare first & second game results
     for params_path in paths_blocked:
         first_game, results_knobby, results_four = calculate_win(params_path)
         if (first_game == 0):
@@ -398,22 +401,22 @@ def main():
     plot_win_rate()
 
 
-    # Retrieve the probability of all 100 moves for each condition
+    # 2) compare the probabilities of all 100 moves for each rule
 
     fig_blocked, (ax_b_1, ax_b_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
     fig_interleaved, (ax_i_1, ax_i_2) = plt.subplots(1, 2, figsize=(16, 8))
-    # for id in id_blocked:
-    #     print("blocked - id", id)
-    #     prob, move = get_all_move_prob(id)
-    #     prob = normalize_probability(prob)
-    #     plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
+    for id in id_blocked:
+        print("blocked - id", id)
+        prob, move = get_all_move_prob(id)
+        prob = normalize_probability(prob)
+        plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
 
     for id in id_interleaved:
         print("interleaved - id", id)
         prob, move = get_all_move_prob(id)
         prob = normalize_probability(prob)
         plot_move_prob_comparison(ax_i_1, ax_i_2, prob)
-    # set figure title
+
     fig_blocked.suptitle('Blocked Condition', fontsize=16)
     fig_interleaved.suptitle('Interleaved Condition', fontsize=16)
     fig_blocked.show()
