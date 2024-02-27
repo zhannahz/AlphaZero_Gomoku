@@ -9,6 +9,8 @@ from numpy.polynomial import Polynomial
 
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
+#p35 - problematic params
+#p16 - lose params
 params_list = []
 paths_blocked = []
 paths_interleaved = []
@@ -141,11 +143,6 @@ def plot_win_rate():
 
     fig, ((ax1_1, ax1_2), (ax2_1, ax2_2)) = plt.subplots(2, 2, figsize=(16, 8), sharex=True, sharey=True)
 
-    # print("win_rate_blocked_1", win_rate_blocked_1)
-    # print("win_rate_interleaved_1", win_rate_interleaved_1)
-    # print("win_rate_blocked_2", win_rate_blocked_2)
-    # print("win_rate_interleaved_2", win_rate_interleaved_2)
-
     # Create x-axis
     x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
     x2_1 = list(range(1, len(win_rate_interleaved_1) + 1))
@@ -253,32 +250,43 @@ def get_all_move_prob(id):
 
     return all_prob_dict, all_moves_dict
 
-def plot_move_prob_comparison(data_prob):
-    x = list(range(1, len(data_prob) + 1)) # move number (about 100*2=200)
-    y1 = [] # move prob for first rule
-    for i in range(len(data_prob)):
-        y1.append(data_prob[i][0])
-    y2 = [] # move prob for second rule
-    for i in range(len(data_prob)):
-        y2.append(data_prob[i][1])
+def plot_move_prob_comparison(ax1, ax2, data_prob):
+    x = list(range(1, len(data_prob) + 1))  # move number (about 100*2=200)
 
-    print("x size:", len(x), "y1 size:", len(y1), "y2 size:", len(y2))
+    y1_raw = []  # move prob for first rule
+    for i in range(len(data_prob)):
+        y1_raw.append(data_prob[i][0])
+    y2_raw = []  # move prob for second rule
+    for i in range(len(data_prob)):
+        y2_raw.append(data_prob[i][1])
 
-    # plot the move prob for the first rule
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
-    ax1.plot(x, y1, label="First Rule")
+    y1_raw = [0 if v is None else v for v in y1_raw]
+    y2_raw = [0 if v is None else v for v in y2_raw]
+
+    # convert nested list to 1D list
+    y1 = [item[0] for item in y1_raw]
+    y2 = [item[0] for item in y2_raw]
+
+    # fit polynomial
+    poly_1 = np.poly1d(np.polyfit(x, y1, 3))
+    smooth_y1 = poly_1(x)
+    poly_2 = np.poly1d(np.polyfit(x, y2, 3))
+    smooth_y2 = poly_2(x)
+
+    # Plot the move prob for the first rule using dots
+    ax1.plot(x, y1, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+    ax1.plot(x, smooth_y1, color='red', alpha=0.5)
     ax1.set_xlabel('Move Number')
     ax1.set_ylabel('Probability')
-    ax1.set_title('Move Probability (Block-Learning)')
-    ax1.legend()
-    # plot the move prob for the second rule
-    ax2.plot(x, y2, label="Second Rule")
+    ax1.set_title('Move Probability (First Rule)')
+
+    # Plot the move prob for the second rule using dots
+    ax2.plot(x, y2, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+    ax2.plot(x, smooth_y2, color='red', alpha=0.5)
     ax2.set_xlabel('Move Number')
     ax2.set_ylabel('Probability')
-    ax2.legend()
-    plt.show()
+    ax2.set_title('Move Probability (Second Rule)')
 
-    return
 
 def normalize_probability(prob):
     for i in range(len(prob)):
@@ -392,15 +400,24 @@ def main():
 
     # Retrieve the probability of all 100 moves for each condition
 
-    for id in id_blocked:
-        prob, move = get_all_move_prob(id)
-        prob = normalize_probability(prob)
-        plot_move_prob_comparison(prob)
-        print("id", id)
+    fig_blocked, (ax_b_1, ax_b_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
+    fig_interleaved, (ax_i_1, ax_i_2) = plt.subplots(1, 2, figsize=(16, 8))
+    # for id in id_blocked:
+    #     print("blocked - id", id)
+    #     prob, move = get_all_move_prob(id)
+    #     prob = normalize_probability(prob)
+    #     plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
 
     for id in id_interleaved:
-        get_all_move_prob(id)
-
+        print("interleaved - id", id)
+        prob, move = get_all_move_prob(id)
+        prob = normalize_probability(prob)
+        plot_move_prob_comparison(ax_i_1, ax_i_2, prob)
+    # set figure title
+    fig_blocked.suptitle('Blocked Condition', fontsize=16)
+    fig_interleaved.suptitle('Interleaved Condition', fontsize=16)
+    fig_blocked.show()
+    fig_interleaved.show()
 
 
 if __name__ == "__main__":
