@@ -254,51 +254,109 @@ def get_all_move_prob(id):
     return all_prob_dict, all_moves_dict
 
 def plot_move_prob_comparison(ax1, ax2, data_prob):
-    x = list(range(1, len(data_prob) + 1))  # move number (about 100*2=200)
-
-    y1_raw = []  # move prob for first rule
-    for i in range(len(data_prob)):
-        y1_raw.append(data_prob[i][0])
-    y2_raw = []  # move prob for second rule
-    for i in range(len(data_prob)):
-        y2_raw.append(data_prob[i][1])
-
-    y1_raw = [0 if v is None else v for v in y1_raw]
-    y2_raw = [0 if v is None else v for v in y2_raw]
+    # y1_raw = []  # move prob for first rule
+    # y2_raw = []  # move prob for second rule
+    y_diff = []
+    all_move = []
+    # find out the largest number of moves
+    max_moves = 0
+    for participant, moves in data_prob.items():
+        if len(moves) > max_moves:
+            max_moves = len(moves)
+        for move, prob in moves.items():
+            all_move.append(move)
+            y_diff.append(prob)
+            # y1_raw.append(prob[0])
+            # y2_raw.append(prob[1])
+    x = np.array(all_move)
+    # y1_raw = [0 if v is None else v for v in y1_raw]
+    # y2_raw = [0 if v is None else v for v in y2_raw]
+    y_diff = [0 if v is None else v for v in y_diff]
 
     # convert nested list to 1D list
-    y1 = [item[0] for item in y1_raw]
-    y2 = [item[0] for item in y2_raw]
+    # y1 = [item[0] for item in y1_raw]
+    # y2 = [item[0] for item in y2_raw]
+    y_diff = [item[0] for item in y_diff]
 
-    # fit polynomial
-    poly_1 = np.poly1d(np.polyfit(x, y1, 3))
-    smooth_y1 = poly_1(x)
-    poly_2 = np.poly1d(np.polyfit(x, y2, 3))
-    smooth_y2 = poly_2(x)
+    # conver to dtype float
+    y1 = np.array(y1, dtype=float)
+    y2 = np.array(y2, dtype=float)
+
+    # Fit a linear model
+    model_1 = np.poly1d(np.polyfit(x, y1, 1))
+    y1_smooth = model_1(x)
+    model_2 = np.poly1d(np.polyfit(x, y2, 1))
+    y2_smooth = model_2(x)
 
     # Plot the move prob for the first rule using dots
     ax1.plot(x, y1, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    ax1.plot(x, smooth_y1, color='red', alpha=0.5)
+    ax1.plot(x, y1_smooth, color='red', alpha=0.5)
     ax1.set_xlabel('Move Number')
     ax1.set_ylabel('Probability')
     ax1.set_title('Move Probability (First Rule)')
 
     # Plot the move prob for the second rule using dots
     ax2.plot(x, y2, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    ax2.plot(x, smooth_y2, color='red', alpha=0.5)
+    ax2.plot(x, y2_smooth, color='red', alpha=0.5)
     ax2.set_xlabel('Move Number')
     ax2.set_ylabel('Probability')
     ax2.set_title('Move Probability (Second Rule)')
 
+    # x = list(range(1, len(data_prob) + 1))  # move number (about 100*2=200)
+    #
 
-def normalize_probability(prob):
+    # for i in range(len(data_prob)):
+    #     y1_raw.append(data_prob[i][0])
+
+    # for i in range(len(data_prob)):
+    #     y2_raw.append(data_prob[i][1])
+    #
+    # y1_raw = [0 if v is None else v for v in y1_raw]
+    # y2_raw = [0 if v is None else v for v in y2_raw]
+    #
+    # # convert nested list to 1D list
+    # y1 = [item[0] for item in y1_raw]
+    # y2 = [item[0] for item in y2_raw]
+    #
+    # # fit polynomial
+    # poly_1 = np.poly1d(np.polyfit(x, y1, 3))
+    # smooth_y1 = poly_1(x)
+    # poly_2 = np.poly1d(np.polyfit(x, y2, 3))
+    # smooth_y2 = poly_2(x)
+    #
+    # # Plot the move prob for the first rule using dots
+    # ax1.plot(x, y1, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+    # ax1.plot(x, smooth_y1, color='red', alpha=0.5)
+    # ax1.set_xlabel('Move Number')
+    # ax1.set_ylabel('Probability')
+    # ax1.set_title('Move Probability (First Rule)')
+    #
+    # # Plot the move prob for the second rule using dots
+    # ax2.plot(x, y2, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+    # ax2.plot(x, smooth_y2, color='red', alpha=0.5)
+    # ax2.set_xlabel('Move Number')
+    # ax2.set_ylabel('Probability')
+    # ax2.set_title('Move Probability (Second Rule)')
+
+
+# def normalize_probability(prob):
+#     for i in range(len(prob)):
+#         max_prob = max(prob[i][0], prob[i][1])
+#         if (max_prob == 0):
+#             # print("max_prob is 0 at move", i, "prob[i]", prob[i])
+#             continue
+#         prob[i] = [prob[i][0] / max_prob, prob[i][1] / max_prob]
+#     return prob
+
+def normalize_diff_prob(prob):
+    diff = []
     for i in range(len(prob)):
-        max_prob = max(prob[i][0], prob[i][1])
-        if (max_prob == 0):
-            # print("max_prob is 0 at move", i, "prob[i]", prob[i])
-            continue
-        prob[i] = [prob[i][0] / max_prob, prob[i][1] / max_prob]
+        prob_fiar = math.log(prob[i][0], 10)
+        prob_knobby = math.log(prob[i][1], 10)
+        diff[i] = prob_fiar - prob_knobby
+
     return prob
+
 def check_data_quality(all_data):
     # a dictionary to store the win rate for each participant
     win_rate_dict = {}
@@ -404,18 +462,25 @@ def main():
     # 2) compare the probabilities of all 100 moves for each rule
 
     fig_blocked, (ax_b_1, ax_b_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
-    fig_interleaved, (ax_i_1, ax_i_2) = plt.subplots(1, 2, figsize=(16, 8))
+    fig_interleaved, (ax_i_1, ax_i_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
+    all_prob_blocked = defaultdict(list)
+    all_prob_interleaved = defaultdict(list)
     for id in id_blocked:
-        print("blocked - id", id)
+        # print("blocked - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_probability(prob)
-        plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
+        prob = normalize_diff_prob(prob)
+        all_prob_blocked[id] = prob
+        #plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
 
     for id in id_interleaved:
-        print("interleaved - id", id)
+        # print("interleaved - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_probability(prob)
-        plot_move_prob_comparison(ax_i_1, ax_i_2, prob)
+        prob = normalize_diff_prob(prob)
+        all_prob_interleaved[id] = prob
+        #plot_move_prob_comparison(ax_i_1, ax_i_2, prob)
+
+    plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked)
+    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved)
 
     fig_blocked.suptitle('Blocked Condition', fontsize=16)
     fig_interleaved.suptitle('Interleaved Condition', fontsize=16)

@@ -161,10 +161,12 @@ class Board(object):
             h = m // width
             w = m % width
             player = states[m]
+            # TODO: Check if there are issues with the following code
+            # check for a horizontal bottom 3 in a knob
 
-            # check for bottom 3 in a knobby
+            # look for the starting position of the base
             if (w in range(width - 2) and
-                    len(set(states.get(i, -1) for i in range(m, m + 3))) == 1):
+                    len(set(states.get(i, -1) for i in range(m, m + 3))) == 1):  #If i is not a valid key in states (meaning no player has moved there), the method returns -1 by default.
                 # check for the middle 2 in a knobby
                 # up direction
                 vertical_knob_up = set()
@@ -178,16 +180,27 @@ class Board(object):
                 elif (len(set(vertical_knob_down)) == 1):
                     return True, player
 
+            # check for a vertical bottom 3 in a knob
             if (h in range(height - 2) and
                     len(set(states.get(i, -1) for i in range(m, m + 3 * width, width))) == 1):
                 # check for the middle 2 in a knobby
-                # right direction
-                horizontal_knob_right = set()
-                horizontal_knob_right.add(states.get(m + width, -1))
-                horizontal_knob_right.add(states.get(m + width + 1, -1))
                 horizontal_knob_left = set()
-                horizontal_knob_left.add(states.get(m + width, -1))
-                horizontal_knob_left.add(states.get(m + width - 1, -1))
+                horizontal_knob_right = set()
+
+                # account for m at the edge of the board
+                # if m is at the right edge, then the right knob is not valid
+                # if m is at the left edge, then the left knob is not valid
+                if (w in range(width - 1)):
+                    horizontal_knob_right.add(states.get(m + width, -1))
+                    horizontal_knob_right.add(states.get(m + width + 1, -1))
+                else:
+                    horizontal_knob_right.add(-1)
+                if (w in range(1, width)):
+                    horizontal_knob_left.add(states.get(m + width, -1))
+                    horizontal_knob_left.add(states.get(m + width - 1, -1))
+                else:
+                    horizontal_knob_left.add(-1)
+
                 if (len(set(horizontal_knob_right)) == 1):
                     return True, player
                 elif (len(set(horizontal_knob_left)) == 1):
