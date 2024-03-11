@@ -71,6 +71,16 @@ def group_by_condition(params_list):
                 id_interleaved.append(this_id)
     print("blocked ids", id_blocked, "\ninterleaved ids", id_interleaved)
 
+def get_frist_game_by_id(id):
+    # find corresponding params file
+    for file_name, file_paths in params_list.items():
+        for path in file_paths:
+            with open(path, 'r') as file:
+                params_data = json.load(file)
+
+            if (params_data['participant_id'] == id):
+                return params_data.get('games_rule', [])[0] # return the first game played
+
 # return
 # 1) the first game rule played
 # 2) the results of the first game
@@ -253,7 +263,7 @@ def get_all_move_prob(id):
 
     return all_prob_dict, all_moves_dict
 
-def plot_move_prob_comparison(ax1, ax2, data_prob):
+def plot_move_prob_comparison(ax1, ax2, data_prob, condition):
     # y1_raw = []  # move prob for first rule
     # y2_raw = []  # move prob for second rule
     y_diff = []
@@ -261,13 +271,15 @@ def plot_move_prob_comparison(ax1, ax2, data_prob):
     # find out the largest number of moves
     max_moves = 0
     for participant, moves in data_prob.items():
+        print("participant", participant, "moves", moves)
         if len(moves) > max_moves:
             max_moves = len(moves)
         for move, prob in moves.items():
-            all_move.append(move)
-            y_diff.append(prob)
+            all_move.append(move) # the move number for each participant
+            y_diff.append(prob) # prob of fiar - prob of knobby
             # y1_raw.append(prob[0])
             # y2_raw.append(prob[1])
+
     x = np.array(all_move)
     # y1_raw = [0 if v is None else v for v in y1_raw]
     # y2_raw = [0 if v is None else v for v in y2_raw]
@@ -278,84 +290,51 @@ def plot_move_prob_comparison(ax1, ax2, data_prob):
     # y2 = [item[0] for item in y2_raw]
     y_diff = [item[0] for item in y_diff]
 
-    # conver to dtype float
-    y1 = np.array(y1, dtype=float)
-    y2 = np.array(y2, dtype=float)
+    # convert to dtype float
+    # y1 = np.array(y1, dtype=float)
+    # y2 = np.array(y2, dtype=float)
+    y_diff = np.array(y_diff, dtype=float)
 
     # Fit a linear model
-    model_1 = np.poly1d(np.polyfit(x, y1, 1))
-    y1_smooth = model_1(x)
-    model_2 = np.poly1d(np.polyfit(x, y2, 1))
-    y2_smooth = model_2(x)
+    model = np.poly1d(np.polyfit(x, y_diff, 1))
 
-    # Plot the move prob for the first rule using dots
-    ax1.plot(x, y1, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    ax1.plot(x, y1_smooth, color='red', alpha=0.5)
-    ax1.set_xlabel('Move Number')
-    ax1.set_ylabel('Probability')
-    ax1.set_title('Move Probability (First Rule)')
+    # model_1 = np.poly1d(np.polyfit(x, y1, 1))
+    # y1_smooth = model_1(x)
+    # model_2 = np.poly1d(np.polyfit(x, y2, 1))
+    # y2_smooth = model_2(x)
 
-    # Plot the move prob for the second rule using dots
-    ax2.plot(x, y2, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    ax2.plot(x, y2_smooth, color='red', alpha=0.5)
-    ax2.set_xlabel('Move Number')
-    ax2.set_ylabel('Probability')
-    ax2.set_title('Move Probability (Second Rule)')
-
-    # x = list(range(1, len(data_prob) + 1))  # move number (about 100*2=200)
-    #
-
-    # for i in range(len(data_prob)):
-    #     y1_raw.append(data_prob[i][0])
-
-    # for i in range(len(data_prob)):
-    #     y2_raw.append(data_prob[i][1])
-    #
-    # y1_raw = [0 if v is None else v for v in y1_raw]
-    # y2_raw = [0 if v is None else v for v in y2_raw]
-    #
-    # # convert nested list to 1D list
-    # y1 = [item[0] for item in y1_raw]
-    # y2 = [item[0] for item in y2_raw]
-    #
-    # # fit polynomial
-    # poly_1 = np.poly1d(np.polyfit(x, y1, 3))
-    # smooth_y1 = poly_1(x)
-    # poly_2 = np.poly1d(np.polyfit(x, y2, 3))
-    # smooth_y2 = poly_2(x)
-    #
-    # # Plot the move prob for the first rule using dots
-    # ax1.plot(x, y1, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    # ax1.plot(x, smooth_y1, color='red', alpha=0.5)
-    # ax1.set_xlabel('Move Number')
-    # ax1.set_ylabel('Probability')
-    # ax1.set_title('Move Probability (First Rule)')
-    #
-    # # Plot the move prob for the second rule using dots
-    # ax2.plot(x, y2, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-    # ax2.plot(x, smooth_y2, color='red', alpha=0.5)
-    # ax2.set_xlabel('Move Number')
-    # ax2.set_ylabel('Probability')
-    # ax2.set_title('Move Probability (Second Rule)')
+    if (condition == 0): # blocked learning
+        ax1.plot(x, y_diff, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+        ax1.plot(x, model, color='red', alpha=0.5)
+        ax1.set_xlabel('Move Number')
+        ax1.set_ylabel('Probability')
+        ax1.set_title('Move Probability Difference (Blocked Learning)')
+    elif (condition == 1):
+        ax2.plot(x, y_diff, 'o', color='black', alpha=0.3)  # 'o' for circular markers
+        ax2.plot(x, model, color='red', alpha=0.5)
+        ax2.set_xlabel('Move Number')
+        ax2.set_ylabel('Probability')
+        ax2.set_title('Move Probability (Second Rule)')
 
 
-# def normalize_probability(prob):
-#     for i in range(len(prob)):
-#         max_prob = max(prob[i][0], prob[i][1])
-#         if (max_prob == 0):
-#             # print("max_prob is 0 at move", i, "prob[i]", prob[i])
-#             continue
-#         prob[i] = [prob[i][0] / max_prob, prob[i][1] / max_prob]
-#     return prob
+def normalize_diff_prob(prob, first_game):
+    # a new list with length of prob
+    diff = [0] * len(prob)
 
-def normalize_diff_prob(prob):
-    diff = []
     for i in range(len(prob)):
-        prob_fiar = math.log(prob[i][0], 10)
-        prob_knobby = math.log(prob[i][1], 10)
-        diff[i] = prob_fiar - prob_knobby
+        prob_fiar = prob[i][0]
+        prob_knobby = prob[i][1]
+        if (prob_fiar != 0):
+            prob_fiar = math.log(prob[i][0], 10)
+        if (prob_knobby != 0):
+            prob_knobby = math.log(prob[i][1], 10)
 
-    return prob
+        if (first_game == 0):  # fiar
+            diff[i] = prob_fiar - prob_knobby
+        elif (first_game == 1):  # knobby
+            diff[i] = prob_knobby - prob_fiar
+
+    return diff
 
 def check_data_quality(all_data):
     # a dictionary to store the win rate for each participant
@@ -468,19 +447,19 @@ def main():
     for id in id_blocked:
         # print("blocked - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_diff_prob(prob)
+        prob = normalize_diff_prob(prob, 0)
         all_prob_blocked[id] = prob
-        #plot_move_prob_comparison(ax_b_1, ax_b_2, prob)
+        #plot_move_prob_comparison(ax_b_1, ax_b_2, prob, 0)
 
     for id in id_interleaved:
         # print("interleaved - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_diff_prob(prob)
+        prob = normalize_diff_prob(prob, 0)
         all_prob_interleaved[id] = prob
-        #plot_move_prob_comparison(ax_i_1, ax_i_2, prob)
+        #plot_move_prob_comparison(ax_i_1, ax_i_2, prob, 0)
 
-    plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked)
-    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved)
+    plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked, 0)
+    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 0)
 
     fig_blocked.suptitle('Blocked Condition', fontsize=16)
     fig_interleaved.suptitle('Interleaved Condition', fontsize=16)

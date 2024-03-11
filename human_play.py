@@ -38,6 +38,7 @@ four_model = "best_policy_6_6_4_1008.model"
 knobby_model = "best_policy_6_6_knobby_1008.model"
 best_four_model = "best_policy_6_6_4_1008.model"
 best_knobby_model = "best_policy_6_6_knobby_1008.model"
+new_knobby_model = "best_policy_6_6_k_0311.model"
 
 class TextColor:
     RED = '\033[91m'
@@ -76,13 +77,15 @@ class Human(object):
         if m == 0:
             model = best_four_model
         elif m == 1:
-            model = best_knobby_model
+            # model = best_knobby_model
+            model = new_knobby_model
         elif m == 2:
             params = load_params_from_file()
             if params["model"] == 0:
                 model = best_four_model
             elif params["model"] == 1:
-                model = best_knobby_model
+                model = new_knobby_model
+            #     model = best_knobby_model
 
         best_policy = PolicyValueNet(board.width, board.height, model_file=model)
         self.mcts_hidden = MCTSPlayer(best_policy.policy_value_fn,

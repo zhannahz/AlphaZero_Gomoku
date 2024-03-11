@@ -109,6 +109,7 @@ class Board(object):
         self.last_move = move
 
     def has_a_winner(self):
+        # print("has a winner for fiar?")
         width = self.width
         height = self.height
         states = self.states
@@ -145,6 +146,7 @@ class Board(object):
         return False, -1
 
     def has_a_winner_knobby(self):
+        # print("has a winner for knobby?")
         width = self.width
         height = self.height
         states = self.states
@@ -297,85 +299,94 @@ class Game(object):
         while True:
             current_player = self.board.get_current_player()
             player_in_turn = players[current_player]
+            # Get MCTS probabilities for the current board state.
 
-            # -- Get MCTS probabilities for the current board state.
-            if current_player == 1:
-                move, move_probs_fiar, move_probs_knobby, rt = player_in_turn.get_action(self.board,
-                                                                                         return_prob=2,
-                                                                                         return_rt=1)
-            else:
-                move, move_probs = player_in_turn.get_action(self.board,
-                                                             return_prob=1,
-                                                             temp=0.85)
+            # 1 -- Experiment Only --
+            # if current_player == 1:
+            #     move, move_probs_fiar, move_probs_knobby, rt = player_in_turn.get_action(self.board,
+            #                                                                              return_prob=2,
+            #                                                                              return_rt=1)
+            # else:
+            #     move, move_probs = player_in_turn.get_action(self.board,
+            #                                                  return_prob=1,
+            #                                                  temp=0.85)
+
+
+            # 2 -- Tain Model Only ---
+            move = player_in_turn.get_action(self.board)
+            # --
 
             self.board.do_move(move)
             self.game_steps += 1
 
-            if current_player == 1:
-                self.player_steps += 1
-                if params["model"] == 0:
-                    params["moves_fouriar"] -= 1
-                elif params["model"] == 1:
-                    params["moves_knobby"] -= 1
-                store_params_to_file()
-
-                print("Player 1 turn")
-                # Save the board matrix
-                move_probs_fiar_reshaped = move_probs_fiar.reshape(self.board.width, self.board.height)
-                move_probs_knobby_reshaped = move_probs_knobby.reshape(self.board.width, self.board.height)
-
-                state_matrices = self.board.current_state()
-                player_moves = state_matrices[1]
-                ai_moves = state_matrices[0]
-                ai_moves[ai_moves == 1] = 2
-                last_move = state_matrices[2]
-                previous_matrix = player_moves + ai_moves - last_move
-                current_matrix = player_moves + ai_moves
-                mask = last_move != 0
-
-                # print("last move\n", last_move)
-
-                # Use this mask to capture the prob only at the last-move location
-                # then, flip the rows to match the coordinate system
-                singleMove_probs_fiar = np.zeros_like(move_probs_fiar_reshaped)
-                singleMove_probs_fiar[mask] = move_probs_fiar_reshaped[mask]
-                # singleMove_probs_fiar = np.flip(singleMove_probs_fiar, 0)
-                singleMove_probs_knobby = np.zeros_like(move_probs_knobby_reshaped)
-                singleMove_probs_knobby[mask] = move_probs_knobby_reshaped[mask]
-                # singleMove_probs_knobby = np.flip(singleMove_probs_knobby, 0)
-
-                # print("prob fiar", singleMove_probs_fiar)
-                # print("prob knobby", singleMove_probs_knobby)
-
-                # --
-                # Get MCTS probabilities for the current board state.
-                # round
-                # reverse order of rows to switch coordinate system
-                # prob_matrix_fiar = singleMove_probs_fiar.reshape(self.board.width, self.board.height)
-                # prob_matrix_fiar = np.flip(singleMove_probs_fiar, 0)
-
-                # reverse order of rows to switch coordinate system
-                # prob_matrix_knobby = singleMove_probs_knobby.reshape(self.board.width, self.board.height)
-                # prob_matrix_knobby = np.flip(singleMove_probs_knobby, 0)
-                # --
-
-                # save above data to one file
-                # self.game_state[self.player_steps-1] = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
-
-                self.board_differnece[self.player_steps - 1] = np.array([previous_matrix, current_matrix])
-                self.prob_knobby[self.player_steps - 1] = singleMove_probs_knobby
-                self.prob_fouriar[self.player_steps - 1] = singleMove_probs_fiar
-                self.prob_knobby_full[self.player_steps - 1] = move_probs_knobby_reshaped
-                self.prob_fouriar_full[self.player_steps - 1] = move_probs_fiar_reshaped
-                self.player_rt[self.player_steps - 1] = rt
-
-                experiment.save_game_data(self.prob_fouriar_full, "fullProbFiar")
-                experiment.save_game_data(self.prob_knobby_full, "fullProbKnobby")
-
-                experiment.save_game_data(self.prob_knobby, "probKnobby")
-                experiment.save_game_data(self.prob_fouriar, "probFouriar")
-                experiment.save_game_data(self.board_differnece, "boardDifference", False)
-                experiment.save_game_data(self.player_rt, "RT")
+            # 1 -- Experiment Only --
+            # if current_player == 1:
+            #     self.player_steps += 1
+            #     if params["model"] == 0:
+            #         params["moves_fouriar"] -= 1
+            #     elif params["model"] == 1:
+            #         params["moves_knobby"] -= 1
+            #     store_params_to_file()
+            #
+            #     print("Player 1 turn")
+            #     # Save the board matrix
+            #     move_probs_fiar_reshaped = move_probs_fiar.reshape(self.board.width, self.board.height)
+            #     move_probs_knobby_reshaped = move_probs_knobby.reshape(self.board.width, self.board.height)
+            #
+            #     state_matrices = self.board.current_state()
+            #     player_moves = state_matrices[1]
+            #     ai_moves = state_matrices[0]
+            #     ai_moves[ai_moves == 1] = 2
+            #     last_move = state_matrices[2]
+            #     previous_matrix = player_moves + ai_moves - last_move
+            #     current_matrix = player_moves + ai_moves
+            #     mask = last_move != 0
+            #
+            #     # print("last move\n", last_move)
+            #
+            #     # Use this mask to capture the prob only at the last-move location
+            #     # then, flip the rows to match the coordinate system
+            #     singleMove_probs_fiar = np.zeros_like(move_probs_fiar_reshaped)
+            #     singleMove_probs_fiar[mask] = move_probs_fiar_reshaped[mask]
+            #     # singleMove_probs_fiar = np.flip(singleMove_probs_fiar, 0)
+            #     singleMove_probs_knobby = np.zeros_like(move_probs_knobby_reshaped)
+            #     singleMove_probs_knobby[mask] = move_probs_knobby_reshaped[mask]
+            #     # singleMove_probs_knobby = np.flip(singleMove_probs_knobby, 0)
+            #
+            #     # print("prob fiar", singleMove_probs_fiar)
+            #     # print("prob knobby", singleMove_probs_knobby)
+            #
+            #     # --
+            #     # Get MCTS probabilities for the current board state.
+            #     # round
+            #     # reverse order of rows to switch coordinate system
+            #     # prob_matrix_fiar = singleMove_probs_fiar.reshape(self.board.width, self.board.height)
+            #     # prob_matrix_fiar = np.flip(singleMove_probs_fiar, 0)
+            #
+            #     # reverse order of rows to switch coordinate system
+            #     # prob_matrix_knobby = singleMove_probs_knobby.reshape(self.board.width, self.board.height)
+            #     # prob_matrix_knobby = np.flip(singleMove_probs_knobby, 0)
+            #     # --
+            #
+            #     # save above data to one file
+            #     # self.game_state[self.player_steps-1] = np.array([prob_matrix, previous_matrix, last_move, current_matrix])
+            #
+            #     self.board_differnece[self.player_steps - 1] = np.array([previous_matrix, current_matrix])
+            #     self.prob_knobby[self.player_steps - 1] = singleMove_probs_knobby
+            #     self.prob_fouriar[self.player_steps - 1] = singleMove_probs_fiar
+            #     self.prob_knobby_full[self.player_steps - 1] = move_probs_knobby_reshaped
+            #     self.prob_fouriar_full[self.player_steps - 1] = move_probs_fiar_reshaped
+            #     self.player_rt[self.player_steps - 1] = rt
+            #
+            #     experiment.save_game_data(self.prob_fouriar_full, "fullProbFiar")
+            #     experiment.save_game_data(self.prob_knobby_full, "fullProbKnobby")
+            #
+            #     experiment.save_game_data(self.prob_knobby, "probKnobby")
+            #     experiment.save_game_data(self.prob_fouriar, "probFouriar")
+            #     experiment.save_game_data(self.board_differnece, "boardDifference", False)
+            #     experiment.save_game_data(self.player_rt, "RT")
+            #
+            # --
 
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
@@ -385,19 +396,19 @@ class Game(object):
                     if winner != -1:
                         print(TextColor.CYAN + "Game end. Winner is " + str(players[winner]) + TextColor.RESET)
                         print()
-                        params["games_rule"].append(params["model"]) # 0: fiar, 1: knobby
-                        params["games_results"].append(winner)
-                        # print("games_results", params["games_results"])
-                        store_params_to_file()
-                        experiment.update_with_condition()
+                        # 1. Experiment Only
+                        # params["games_rule"].append(params["model"]) # 0: fiar, 1: knobby
+                        # params["games_results"].append(winner)
+                        # store_params_to_file()
+                        # experiment.update_with_condition()
                     else:
                         print(TextColor.CYAN + "Game end. No Winner. Tie" + TextColor.RESET)
                         print()
-                        params["games_rule"].append(params["model"])  # 0: fiar, 1: knobby
-                        params["games_results"].append(3)
-                        # print("games_results", params["games_results"])
-                        store_params_to_file()
-                        experiment.update_with_condition()
+                        # 1. Experiment Only
+                        # params["games_rule"].append(params["model"])  # 0: fiar, 1: knobby
+                        # params["games_results"].append(3)
+                        # store_params_to_file()
+                        # experiment.update_with_condition()
                 return winner
 
     def start_self_play(self, player, is_shown=0, temp=1e-3):
