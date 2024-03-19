@@ -4,10 +4,10 @@ human VS AI models
 Input your move in the format: 2,3
 
 @author: Junxiao Song
+@modified by Hannah Zeng
 """
 
 from __future__ import print_function
-import pickle
 
 import numpy as np
 
@@ -21,11 +21,7 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 # from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 # from policy_value_net_keras import PolicyValueNet  # Keras
 import pickle
-import torch
-from collections import OrderedDict
-import experiment
 
-import mcts_alphaZero
 
 import json
 
@@ -79,7 +75,7 @@ class Human(object):
         elif m == 1:
             # model = best_knobby_model
             model = new_knobby_model
-        elif m == 2:
+        elif m == 2: #?????
             params = load_params_from_file()
             if params["model"] == 0:
                 model = best_four_model
@@ -98,7 +94,15 @@ class Human(object):
         move_probs[list(acts)] = probs
         return move_probs
 
-
+    # 1 -- Experiment Only --
+    # if current_player == 1:
+    #     move, move_probs_fiar, move_probs_knobby, rt = player_in_turn.get_action(self.board,
+    #                                                                              return_prob=2,
+    #                                                                              return_rt=1)
+    # else:
+    #     move, move_probs = player_in_turn.get_action(self.board,
+    #                                                  return_prob=1,
+    #                                                  temp=0.85)
     def get_action(self, board, temp=0.75, return_prob=0, return_rt=0):
         # temp (0, 1] needs to be larger for detailed probability map
 
@@ -110,7 +114,7 @@ class Human(object):
         move_probs_knobby = np.zeros(board.width * board.height)
 
         if len(sensible_moves) > 0:
-            if return_prob == 2:
+            if return_prob == 2: #两个都要
                 self.set_hidden_player(board, 0)
                 move_probs_fiar = self.get_hidden_probability(board, 0.75)
                 self.set_hidden_player(board, 1)

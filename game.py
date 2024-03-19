@@ -424,7 +424,7 @@ class Game(object):
         while True:
             move, move_probs = player.get_action(self.board,
                                                  temp=temp,
-                                                 return_prob=1)
+                                                 return_prob=1) # training knobby model
             # store the data
             states.append(self.board.current_state())
             mcts_probs.append(move_probs)

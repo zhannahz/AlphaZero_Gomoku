@@ -5,12 +5,11 @@ import json
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from numpy.polynomial import Polynomial
-
-
+# from simulation import convert_to_state
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
-#p35 - problematic params
-#p16 - lose params
+# p35 - problematic params
+# p16 - lose params
 params_list = []
 paths_blocked = []
 paths_interleaved = []
@@ -71,15 +70,16 @@ def group_by_condition(params_list):
                 id_interleaved.append(this_id)
     print("blocked ids", id_blocked, "\ninterleaved ids", id_interleaved)
 
+
 def get_frist_game_by_id(id):
     # find corresponding params file
     for file_name, file_paths in params_list.items():
         for path in file_paths:
             with open(path, 'r') as file:
                 params_data = json.load(file)
-
             if (params_data['participant_id'] == id):
-                return params_data.get('games_rule', [])[0] # return the first game played
+                return params_data.get('games_rule', [])[0]  # return the first game played
+
 
 # return
 # 1) the first game rule played
@@ -94,12 +94,12 @@ def calculate_win(params_path):
 
     # Extract relevant information
     id = params_data['participant_id']
-    games_condition = params_data.get('condition', 0) # 0 = blcok, 1 = interleaved
+    games_condition = params_data.get('condition', 0)  # 0 = blcok, 1 = interleaved
     games_rule = params_data.get('games_rule', [])
     games_results = params_data.get('games_results', [])
     games_count = params_data.get('games_count', 0)
 
-    if games_rule == []: #
+    if games_rule == []:  #
         print("No games_rule for", id)
     # which game is played first
     first_game = games_rule[0]
@@ -120,6 +120,7 @@ def calculate_win(params_path):
     else:
         return first_game, results_knobby, results_four
 
+
 # return the win rate for all games
 # given the cumulative results
 def get_win_rate_all(data):
@@ -131,15 +132,15 @@ def get_win_rate_all(data):
     for i in range(n):
         result = data[i]
         result = [0 if r != 1 else 1 for r in result]
-        for j in range(len(result)): # j = game number
+        for j in range(len(result)):  # j = game number
             sum_win[j] += result[j]
             count[j] += 1
 
     while count and count[-1] == 0:
         count.pop()
     max = count[0]
-    count = [x for x in count if x == max] # make sure to look at the same number of games for each participant
-    sum_win = sum_win[:len(count)] # slice to the same length as count
+    count = [x for x in count if x == max]  # make sure to look at the same number of games for each participant
+    sum_win = sum_win[:len(count)]  # slice to the same length as count
 
     for i in range(len(sum_win)):
         if count[i] != 0:
@@ -147,6 +148,7 @@ def get_win_rate_all(data):
             win_rate.append(w)
 
     return win_rate, max
+
 
 # Plot 4 figures:
 # win rates for blocked & interleaved conditions
@@ -206,6 +208,7 @@ def plot_win_rate():
     # Show plot
     plt.show()
 
+
 def get_all_move_prob(id):
     global root
 
@@ -213,15 +216,15 @@ def get_all_move_prob(id):
     all_prob_dict = defaultdict(list)
 
     # iterate through all games played by the participant
-    for round in range(1, 60): #60 is the max #games played so far
+    for round in range(1, 60):  # 60 is the max #games played so far
         # create a dictionary to store the move and prob for each round/game
         move_dict = defaultdict(list)
         prob_dict = defaultdict(list)
 
         i = str(round)
-        file_probKnobby = id+"_probKnobby_"+i+".npy"
-        file_probFour = id+"_probFouriar_"+i+".npy"
-        file_move = id+"_boardDifference_"+i+".npy"
+        file_probKnobby = id + "_probKnobby_" + i + ".npy"
+        file_probFour = id + "_probFouriar_" + i + ".npy"
+        file_move = id + "_boardDifference_" + i + ".npy"
 
         path_k = os.path.join(root, f"{id}\\{file_probKnobby}")
         path_f = os.path.join(root, f"{id}\\{file_probFour}")
@@ -237,7 +240,7 @@ def get_all_move_prob(id):
             probFour = np.load(path_f, allow_pickle=True)
             move = np.load(path_move, allow_pickle=True)
 
-        move = move[:20] # all participants finish within 20 moves, so remove redundant 0s
+        move = move[:20]  # all participants finish within 20 moves, so remove redundant 0s
         n_steps = len(move)
         for s in range(n_steps):
             if np.all(move[s][0] == None) or np.all(move[s][1] == None):
@@ -251,8 +254,8 @@ def get_all_move_prob(id):
 
         n = len(all_moves_dict)
         for i in range(len(move_dict)):
-            all_moves_dict[n+i] = move_dict[i]
-            all_prob_dict[n+i] = prob_dict[i]
+            all_moves_dict[n + i] = move_dict[i]
+            all_prob_dict[n + i] = prob_dict[i]
 
     # mask the probability matrices with the move matrices
     for m in range(0, len(all_moves_dict)):
@@ -260,61 +263,70 @@ def get_all_move_prob(id):
         mask = move.astype(bool)
         all_prob_dict[m] = [all_prob_dict[m][0][mask], all_prob_dict[m][1][mask]]
 
-
     return all_prob_dict, all_moves_dict
 
+
 def plot_move_prob_comparison(ax1, ax2, data_prob, condition):
-    # y1_raw = []  # move prob for first rule
-    # y2_raw = []  # move prob for second rule
     y_diff = []
     all_move = []
-    # find out the largest number of moves
     max_moves = 0
     for participant, moves in data_prob.items():
-        print("participant", participant, "moves", moves)
         if len(moves) > max_moves:
             max_moves = len(moves)
-        for move, prob in moves.items():
-            all_move.append(move) # the move number for each participant
-            y_diff.append(prob) # prob of fiar - prob of knobby
-            # y1_raw.append(prob[0])
-            # y2_raw.append(prob[1])
+        for i in range(len(moves)):
+            all_move.append(i + 1)  # x: the move number for each participant
+            y_diff.append(moves[i])  # y: prob difference
 
     x = np.array(all_move)
-    # y1_raw = [0 if v is None else v for v in y1_raw]
-    # y2_raw = [0 if v is None else v for v in y2_raw]
+
     y_diff = [0 if v is None else v for v in y_diff]
 
-    # convert nested list to 1D list
-    # y1 = [item[0] for item in y1_raw]
-    # y2 = [item[0] for item in y2_raw]
-    y_diff = [item[0] for item in y_diff]
-
-    # convert to dtype float
-    # y1 = np.array(y1, dtype=float)
-    # y2 = np.array(y2, dtype=float)
     y_diff = np.array(y_diff, dtype=float)
 
-    # Fit a linear model
-    model = np.poly1d(np.polyfit(x, y_diff, 1))
+    x_1 = []
+    y_1 = []
+    x_2 = []
+    y_2 = []
 
-    # model_1 = np.poly1d(np.polyfit(x, y1, 1))
-    # y1_smooth = model_1(x)
-    # model_2 = np.poly1d(np.polyfit(x, y2, 1))
-    # y2_smooth = model_2(x)
+    split_point = 100
+    if (condition == 0):  # blocked learning
+        # plot only the first half of the data
+        for i in x:
+            if i < split_point:
+                x_1.append(x[i])
+                y_1.append(y_diff[i])
+            if i >= split_point:
+                x_2.append(x[i])
+                y_2.append(y_diff[i])
+    elif (condition == 1):  # interleaved learning
+        # plot odd and even data separately
+        for i in x:
+            if (i % 2 != 0):
+                x_1.append(x[i])
+                y_1.append(y_diff[i])
+            else:
+                x_2.append(x[i])
+                y_2.append(y_diff[i])
+    # Fit a linear model - outliers removed
+    y_filtered_1 = remove_outliers(y_1)
+    y_filtered_2 = remove_outliers(y_2)
+    model_1 = np.poly1d(np.polyfit(x_1, y_filtered_1, 1))
+    y_smooth_1 = model_1(x_1)
+    model_2 = np.poly1d(np.polyfit(x_2, y_filtered_2, 1))
+    y_smooth_2 = model_2(x_2)
 
-    if (condition == 0): # blocked learning
-        ax1.plot(x, y_diff, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-        ax1.plot(x, model, color='red', alpha=0.5)
-        ax1.set_xlabel('Move Number')
-        ax1.set_ylabel('Probability')
-        ax1.set_title('Move Probability Difference (Blocked Learning)')
-    elif (condition == 1):
-        ax2.plot(x, y_diff, 'o', color='black', alpha=0.3)  # 'o' for circular markers
-        ax2.plot(x, model, color='red', alpha=0.5)
-        ax2.set_xlabel('Move Number')
-        ax2.set_ylabel('Probability')
-        ax2.set_title('Move Probability (Second Rule)')
+    ax1.plot(x_1, y_1, 'o', color='black', markersize=1, alpha=0.1)
+    ax2.plot(x_2, y_2, 'o', color='black', markersize=1, alpha=0.1)
+    ax1.plot(x_1, y_smooth_1, color='red')
+    ax2.plot(x_2, y_smooth_2, color='red')
+    ax1.set_title('first game')
+    ax2.set_title('second game')
+    # zoom-in
+    if (condition == 0):
+        ax1.set_xlim(0, split_point)
+        ax2.set_xlim(split_point, max_moves)
+    # ax1.set_ylim(-5, 5)
+    # ax2.set_ylim(-5, 5)
 
 
 def normalize_diff_prob(prob, first_game):
@@ -325,16 +337,42 @@ def normalize_diff_prob(prob, first_game):
         prob_fiar = prob[i][0]
         prob_knobby = prob[i][1]
         if (prob_fiar != 0):
-            prob_fiar = math.log(prob[i][0], 10)
+            prob_fiar = math.log(prob_fiar[0], 10)
+        else:
+            prob_fiar = 0
         if (prob_knobby != 0):
-            prob_knobby = math.log(prob[i][1], 10)
+            prob_knobby = math.log(prob_knobby[0], 10)
+        else:
+            prob_knobby = 0
 
         if (first_game == 0):  # fiar
             diff[i] = prob_fiar - prob_knobby
+            diff[i] = float(diff[i])
         elif (first_game == 1):  # knobby
             diff[i] = prob_knobby - prob_fiar
+            diff[i] = float(diff[i])
 
     return diff
+
+
+def remove_outliers(data):
+    # remove outliers
+    Q1 = np.percentile(data, 25)
+    Q3 = np.percentile(data, 75)
+    IQR = Q3 - Q1
+    threshold = 1.5
+
+    # Identify outliers
+    lower_bound = Q1 - threshold * IQR
+    upper_bound = Q3 + threshold * IQR
+    outliers = (data < lower_bound) | (data > upper_bound)
+    # print all outliers
+    all_outliers = [i for i, d in enumerate(outliers) if d == True]
+    # print("outliers", all_outliers)
+    data_filtered = [0 if d in outliers else d for d in data]
+
+    return data_filtered
+
 
 def check_data_quality(all_data):
     # a dictionary to store the win rate for each participant
@@ -364,6 +402,7 @@ def check_data_quality(all_data):
     plt.title('Win Rate Distribution (n={})'.format(len(win_rate_dict)))
     plt.show()
 
+
 def main():
     global params_list, \
         paths_blocked, \
@@ -382,7 +421,7 @@ def main():
 
     # test overall data quality
     check_data_quality(params_list)
-    
+
     # Group data by condition (blocked vs interleaved)
     group_by_condition(params_list)
 
@@ -437,7 +476,6 @@ def main():
 
     plot_win_rate()
 
-
     # 2) compare the probabilities of all 100 moves for each rule
 
     fig_blocked, (ax_b_1, ax_b_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
@@ -447,19 +485,19 @@ def main():
     for id in id_blocked:
         # print("blocked - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_diff_prob(prob, 0)
+        first_game = get_frist_game_by_id(id)
+        prob = normalize_diff_prob(prob, first_game)
         all_prob_blocked[id] = prob
-        #plot_move_prob_comparison(ax_b_1, ax_b_2, prob, 0)
 
     for id in id_interleaved:
         # print("interleaved - id", id)
         prob, move = get_all_move_prob(id)
-        prob = normalize_diff_prob(prob, 0)
+        first_game = get_frist_game_by_id(id)
+        prob = normalize_diff_prob(prob, first_game)
         all_prob_interleaved[id] = prob
-        #plot_move_prob_comparison(ax_i_1, ax_i_2, prob, 0)
 
     plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked, 0)
-    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 0)
+    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 1)
 
     fig_blocked.suptitle('Blocked Condition', fontsize=16)
     fig_interleaved.suptitle('Interleaved Condition', fontsize=16)
