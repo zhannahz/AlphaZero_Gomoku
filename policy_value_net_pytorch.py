@@ -5,6 +5,7 @@ Tested in PyTorch 0.2.0 and 0.3.0
 
 @author: Junxiao Song
 """
+import os
 
 import torch
 import torch.nn as nn
@@ -74,8 +75,14 @@ class PolicyValueNet():
                                     weight_decay=self.l2_const)
 
         if model_file:
-            net_params = torch.load(model_file)
-            self.policy_value_net.load_state_dict(net_params)
+            # check if model file exists
+            if os.path.exists(model_file):
+                net_params = torch.load(model_file)
+                self.policy_value_net.load_state_dict(net_params)
+            else:
+                parent_dir = os.path.dirname(os.getcwd())
+                net_params = torch.load(os.path.join(parent_dir, model_file))
+                self.policy_value_net.load_state_dict(net_params)
 
     def policy_value(self, state_batch):
         """

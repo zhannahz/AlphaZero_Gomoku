@@ -59,12 +59,13 @@ class Human(object):
         params = load_params_from_file()
         self.player = None
         self.mcts_hidden = None
-        if params["model"] == 0:
-            self.model = four_model
-        elif params["model"] == 1:
-            self.model = knobby_model
-        else:
-            self.model = four_model
+        if params is not None:
+            if params["model"] == 0:
+                self.model = four_model
+            elif params["model"] == 1:
+                self.model = knobby_model
+            else:
+                self.model = four_model
 
     def set_player_ind(self, p):
         self.player = p
@@ -226,6 +227,9 @@ def run():
         print('\n\rquit')
 
 def load_params_from_file(filename="params.json"):
+    # check if the file exists
+    if not os.path.exists(filename):
+        return None
     with open(filename, 'r') as file:
         return json.load(file)
 

@@ -4,8 +4,8 @@ import numpy as np
 import json
 from collections import defaultdict
 import matplotlib.pyplot as plt
-from numpy.polynomial import Polynomial
-# from simulation import convert_to_state
+
+from simulation import convert_to_state
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
 # p35 - problematic params
@@ -249,8 +249,9 @@ def get_all_move_prob(id):
             move_dict[s] = step
             prob_dict[s] = probFour[s], probKnobby[s]
 
-        # print("move_dict size:", len(move_dict), "for round", i)
-        # print("prob_dict size:", len(prob_dict), "for round", i)
+            # print("id", id, "round", round, "step", s, "move", move[s])
+            # new_prob_fiar, new_prob_knobby = convert_to_state(move[s])
+            # print("new_prob_fiar", new_prob_fiar, "new_prob_knobby", new_prob_knobby)
 
         n = len(all_moves_dict)
         for i in range(len(move_dict)):
