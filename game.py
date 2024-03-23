@@ -214,7 +214,10 @@ class Board(object):
         """Check whether the game is ended or not"""
         global params
         params = load_params_from_file()
-
+        if (params is None):
+            # go to an upper directory
+            parent_dir = os.path.dirname(os.getcwd())
+            params = load_params_from_file(parent_dir + "/params.json")
         if params["model"] == 0:
             # Check whether the 4iar game is ended or not
             win, winner = self.has_a_winner()
@@ -455,10 +458,14 @@ class Game(object):
 
 
 def store_params_to_file(filename="params.json"):
+    if not os.path.exists(filename):
+        return None
     with open(filename, 'w') as file:
         json.dump(params, file)
 
 
 def load_params_from_file(filename="params.json"):
+    if not os.path.exists(filename):
+        return None
     with open(filename, 'r') as file:
         return json.load(file)

@@ -107,6 +107,7 @@ class PolicyValueNet():
         action and the score of the board state
         """
         legal_positions = board.availables
+        current_state_raw = board.current_state()
         current_state = np.ascontiguousarray(board.current_state().reshape(
                 -1, 4, self.board_width, self.board_height))
         if self.use_gpu:

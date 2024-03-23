@@ -4,8 +4,11 @@ import numpy as np
 import json
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
 
-from simulation import convert_to_state
+from simulation import state_to_prob
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
 # p35 - problematic params
@@ -43,19 +46,17 @@ def find_duplicate_params():
                 # Extract participant ID from the file path
                 participant_id = os.path.basename(os.path.dirname(params_path))
                 if (participant_id not in deprecated_id):
-                    params_dict[file_name].append(params_path)
+                    params_dict[participant_id].append(params_path)
 
-    # Filter out items in the dictionary where the values are not unique
-    duplicate_params = {k: v for k, v in params_dict.items() if len(v) > 1}
-
-    return duplicate_params
+    return params_dict
 
 
 # group data by condition (blocked=0 vs interleaved=1)
 def group_by_condition(params_list):
     global paths_blocked, paths_interleaved
 
-    for file_name, file_paths in params_list.items():
+    for id, file_paths in params_list.items():
+        #print("id", id, "file_paths", file_paths)
         for path in file_paths:
             with open(path, 'r') as file:
                 params_data = json.load(file)
@@ -229,8 +230,6 @@ def get_all_move_prob(id):
         path_k = os.path.join(root, f"{id}\\{file_probKnobby}")
         path_f = os.path.join(root, f"{id}\\{file_probFour}")
         path_move = os.path.join(root, f"{id}\\{file_move}")
-        # print("root", root, "id", id)
-        # print("path_k", path_k, "path_f", path_f, "path_move", path_move)
 
         # check if the file exists
         if not os.path.exists(path_k) or not os.path.exists(path_f) or not os.path.exists(path_move):
@@ -243,15 +242,14 @@ def get_all_move_prob(id):
         move = move[:20]  # all participants finish within 20 moves, so remove redundant 0s
         n_steps = len(move)
         for s in range(n_steps):
-            if np.all(move[s][0] == None) or np.all(move[s][1] == None):
+            if np.all(move[s][0] == None) or np.all(move[s][1] == None): # skip if the move is None
                 continue
             step = move[s][1] - move[s][0]
             move_dict[s] = step
             prob_dict[s] = probFour[s], probKnobby[s]
-
-            # print("id", id, "round", round, "step", s, "move", move[s])
-            # new_prob_fiar, new_prob_knobby = convert_to_state(move[s])
-            # print("new_prob_fiar", new_prob_fiar, "new_prob_knobby", new_prob_knobby)
+            print("id", id, "round", round, "step", s, "move\n", move[s])
+            new_prob_fiar, new_prob_knobby = state_to_prob(move[s])
+            print("new_prob_fiar", new_prob_fiar, "new_prob_knobby", new_prob_knobby)
 
         n = len(all_moves_dict)
         for i in range(len(move_dict)):
@@ -267,19 +265,77 @@ def get_all_move_prob(id):
     return all_prob_dict, all_moves_dict
 
 
+def plot_mixed_effect_model(df_blocked, df_interleaved, ax_blocked_1, ax_blocked_2, ax_interleaved_1, ax_interleaved_2):
+    # Blocked condition (frac_moves vs. prob_diff)
+    df_blocked_first_half = df_blocked[df_blocked['frac_moves'] < 0.5].copy()
+    df_blocked_second_half = df_blocked[df_blocked['frac_moves'] >= 0.5].copy()
+
+    # First half of blocked data
+    ax_blocked_1.scatter('frac_moves', 'prob_diff', data=df_blocked_first_half,
+                         color='black', alpha=0.3, label='Blocked (First Half)')
+    model_blocked_first_half = smf.mixedlm('prob_diff ~ frac_moves', df_blocked_first_half, groups=df_blocked_first_half['id'])
+    result_blocked_first_half = model_blocked_first_half.fit()
+    print(result_blocked_first_half.summary())
+    #
+    df_blocked_first_half.loc[:, 'fittedvalues'] = result_blocked_first_half.fittedvalues
+    ax_blocked_1.plot('frac_moves', 'fittedvalues', data=df_blocked_first_half, color='red', label='Blocked (First Half - LMEM)')
+
+    # Second half of blocked data
+    ax_blocked_2.scatter('frac_moves', 'prob_diff', data=df_blocked_second_half,
+                         color='black', alpha=0.3, label='Blocked (Second Half)')
+    model_blocked_second_half = smf.mixedlm('prob_diff ~ frac_moves', df_blocked_second_half, groups=df_blocked_second_half['id'])
+    result_blocked_second_half = model_blocked_second_half.fit()
+    print(result_blocked_second_half.summary())
+    df_blocked_second_half.loc[:, 'fittedvalues'] = result_blocked_second_half.fittedvalues
+    ax_blocked_2.plot('frac_moves', 'fittedvalues', data=df_blocked_second_half, color='red', label='Blocked (Second Half - LMEM)')
+
+    # Interleaved condition
+    df_interleaved_odd = df_interleaved[df_interleaved['move_number'] % 2 != 0].copy()
+    df_interleaved_even = df_interleaved[df_interleaved['move_number'] % 2 == 0].copy()
+
+    # Odd indices of interleaved data
+    ax_interleaved_1.scatter('frac_moves', 'prob_diff', data=df_interleaved_odd,
+                             color='black', alpha=0.3, label='Interleaved (Odd)')
+    model_interleaved_odd = smf.mixedlm('prob_diff ~ frac_moves', df_interleaved_odd, groups=df_interleaved_odd['id'])
+    result_interleaved_odd = model_interleaved_odd.fit()
+    df_interleaved_odd['fittedvalues'] = result_interleaved_odd.fittedvalues
+    ax_interleaved_1.plot('frac_moves', 'fittedvalues', data=df_interleaved_odd,
+                          color='red', alpha=0.3, label='Interleaved (Odd - LMEM)')
+
+    # Even indices of interleaved data
+    ax_interleaved_2.scatter('frac_moves', 'prob_diff', data=df_interleaved_even, alpha=0.5, label='Interleaved (Even)')
+    model_interleaved_even = smf.mixedlm('prob_diff ~ frac_moves', df_interleaved_even,
+                                         groups=df_interleaved_even['id'])
+    result_interleaved_even = model_interleaved_even.fit()
+    df_interleaved_even['fittedvalues'] = result_interleaved_even.fittedvalues
+    ax_interleaved_2.plot('frac_moves', 'fittedvalues', data=df_interleaved_even,
+                          color='red', alpha=0.3, label='Interleaved (Even - LMEM)')
+
+    # Set labels and titles for all subplots
+    for ax in [ax_blocked_1, ax_blocked_2, ax_interleaved_1, ax_interleaved_2]:
+        ax.set_xlabel('Move Fraction (0 - 1)')
+        ax.set_ylabel('Probability Difference')
+        ax.legend()
+
+    ax_blocked_1.set_title('Blocked (First Half)')
+    ax_blocked_2.set_title('Blocked (Second Half)')
+    ax_interleaved_1.set_title('Interleaved (Odd)')
+    ax_interleaved_2.set_title('Interleaved (Even)')
+
 def plot_move_prob_comparison(ax1, ax2, data_prob, condition):
     y_diff = []
     all_move = []
+    all_move_fraction = []
     max_moves = 0
     for participant, moves in data_prob.items():
         if len(moves) > max_moves:
             max_moves = len(moves)
         for i in range(len(moves)):
             all_move.append(i + 1)  # x: the move number for each participant
+            all_move_fraction.append((i+1) / len(moves))  # x: floats from 0 to 1
             y_diff.append(moves[i])  # y: prob difference
 
     x = np.array(all_move)
-
     y_diff = [0 if v is None else v for v in y_diff]
 
     y_diff = np.array(y_diff, dtype=float)
@@ -288,44 +344,75 @@ def plot_move_prob_comparison(ax1, ax2, data_prob, condition):
     y_1 = []
     x_2 = []
     y_2 = []
+    x_1_fraction = []
+    y_1_fraction = []
+    x_2_fraction = []
+    y_2_fraction = []
 
-    split_point = 100
+    half_fraction = 0.5
     if (condition == 0):  # blocked learning
-        # plot only the first half of the data
-        for i in x:
-            if i < split_point:
-                x_1.append(x[i])
-                y_1.append(y_diff[i])
-            if i >= split_point:
-                x_2.append(x[i])
-                y_2.append(y_diff[i])
+        for i in all_move_fraction:
+            index = all_move_fraction.index(i)
+            if i < half_fraction:
+                x_1_fraction.append(i)
+                y_1_fraction.append(y_diff[index])
+            if i >= half_fraction:
+                x_2_fraction.append(i)
+                y_2_fraction.append(y_diff[index])
+        model_1 = np.poly1d(np.polyfit(x_1_fraction, y_1_fraction, 1))
+        y_smooth_1 = model_1(x_1_fraction)
+        model_2 = np.poly1d(np.polyfit(x_2_fraction, y_2_fraction, 1))
+        y_smooth_2 = model_2(x_2_fraction)
+
     elif (condition == 1):  # interleaved learning
         # plot odd and even data separately
-        for i in x:
-            if (i % 2 != 0):
+        for i, move_num in enumerate(all_move): # i = index, move_num = move number
+            if (move_num % 2 != 0): # first game
                 x_1.append(x[i])
                 y_1.append(y_diff[i])
             else:
                 x_2.append(x[i])
                 y_2.append(y_diff[i])
-    # Fit a linear model - outliers removed
-    y_filtered_1 = remove_outliers(y_1)
-    y_filtered_2 = remove_outliers(y_2)
-    model_1 = np.poly1d(np.polyfit(x_1, y_filtered_1, 1))
-    y_smooth_1 = model_1(x_1)
-    model_2 = np.poly1d(np.polyfit(x_2, y_filtered_2, 1))
-    y_smooth_2 = model_2(x_2)
+        # Fit a linear model - outliers removed
+        # y_filtered_1 = remove_outliers(y_1)
+        # y_filtered_2 = remove_outliers(y_2)
 
-    ax1.plot(x_1, y_1, 'o', color='black', markersize=1, alpha=0.1)
-    ax2.plot(x_2, y_2, 'o', color='black', markersize=1, alpha=0.1)
-    ax1.plot(x_1, y_smooth_1, color='red')
-    ax2.plot(x_2, y_smooth_2, color='red')
+        # ALTERNATIVE: only kept inliers
+        inliers_1 = remove_outliers(np.array(y_1))
+        x_1 = np.array(x_1)[inliers_1]
+        y_filtered_1 = np.array(y_1)[inliers_1]
+
+        inliers_2 = remove_outliers(np.array(y_2))
+        x_2 = np.array(x_2)[inliers_2]
+        y_filtered_2 = np.array(y_2)[inliers_2]
+
+        model_1 = np.poly1d(np.polyfit(x_1, y_filtered_1, 1))
+        y_smooth_1 = model_1(x_1)
+        model_2 = np.poly1d(np.polyfit(x_2, y_filtered_2, 1))
+        y_smooth_2 = model_2(x_2)
+
+    if (condition == 0):
+        ax1.plot(x_1_fraction, y_1_fraction, 'o', color='black', markersize=2, alpha=0.1)
+        ax2.plot(x_2_fraction, y_2_fraction, 'o', color='black', markersize=2, alpha=0.1)
+        ax1.plot(x_1_fraction, y_smooth_1, color='red')
+        ax2.plot(x_2_fraction, y_smooth_2, color='red')
+        ax1.set_title('Blocked Condition (first game)')
+        ax2.set_title('Blocked Condition (second game)')
+    elif (condition == 1):
+        ax1.plot(x_1, y_filtered_1, 'o', color='black', markersize=2, alpha=0.1)
+        ax2.plot(x_2, y_filtered_2, 'o', color='black', markersize=2, alpha=0.1)
+        ax1.plot(x_1, y_smooth_1, color='red')
+        ax2.plot(x_2, y_smooth_2, color='red')
+        ax1.set_title('Interleaved Condition (first game)')
+        ax2.set_title('Interleaved Condition (second game)')
+
     ax1.set_title('first game')
     ax2.set_title('second game')
     # zoom-in
     if (condition == 0):
-        ax1.set_xlim(0, split_point)
-        ax2.set_xlim(split_point, max_moves)
+        ax1.set_xlim(0, half_fraction)
+        ax2.set_xlim(half_fraction, 1)
+
     # ax1.set_ylim(-5, 5)
     # ax2.set_ylim(-5, 5)
 
@@ -341,6 +428,7 @@ def normalize_diff_prob(prob, first_game):
             prob_fiar = math.log(prob_fiar[0], 10)
         else:
             prob_fiar = 0
+
         if (prob_knobby != 0):
             prob_knobby = math.log(prob_knobby[0], 10)
         else:
@@ -366,13 +454,14 @@ def remove_outliers(data):
     # Identify outliers
     lower_bound = Q1 - threshold * IQR
     upper_bound = Q3 + threshold * IQR
-    outliers = (data < lower_bound) | (data > upper_bound)
-    # print all outliers
-    all_outliers = [i for i, d in enumerate(outliers) if d == True]
-    # print("outliers", all_outliers)
-    data_filtered = [0 if d in outliers else d for d in data]
+    # outliers = (data < lower_bound) | (data > upper_bound)
+    # data_filtered = [0 if d in outliers else d for d in data]
+    # return data_filtered
 
-    return data_filtered
+    # ALTERNATIVE: Use a boolean mask for indices within the interquartile range
+    inliers = (data >= lower_bound) & (data <= upper_bound)
+
+    return inliers
 
 
 def check_data_quality(all_data):
@@ -403,6 +492,19 @@ def check_data_quality(all_data):
     plt.title('Win Rate Distribution (n={})'.format(len(win_rate_dict)))
     plt.show()
 
+def create_dataframe(id_blocked, id_interleaved):
+    data = []
+    for id in id_blocked + id_interleaved:
+        prob, move = get_all_move_prob(id)
+        first_game = get_frist_game_by_id(id)
+        prob = normalize_diff_prob(prob, first_game)
+        condition = 'blocked' if id in id_blocked else 'interleaved'
+        first_game = 'fiar' if first_game == 0 else 'knobby'
+        for i in range(len(prob)):
+            frac_moves = (i+1) / len(prob)
+            data.append([id, condition, first_game, i+1, frac_moves, prob[i]])
+    df = pd.DataFrame(data, columns=['id', 'condition', 'first_game', 'move_number', 'frac_moves', 'prob_diff'])
+    return df
 
 def main():
     global params_list, \
@@ -449,9 +551,7 @@ def main():
             data_blocked_1.append(results_knobby)
             data_blocked_2.append(results_four)
             count_blocked_first_knobby += 1
-    print("block-learning", len(paths_blocked))
-    print("4iar first:", count_blocked_first_4iar, "knobby first:", count_blocked_first_knobby)
-    # Retrieve first & second game results for interleaved condition
+
     for params_path in paths_interleaved:
         first_game, results_knobby, results_four = calculate_win(params_path)
         if (first_game == 0):
@@ -462,36 +562,31 @@ def main():
             data_interleaved_1.append(results_knobby)
             data_interleaved_2.append(results_four)
             count_mix_first_knobby += 1
-    print("interleaved-learning", len(paths_interleaved))
-    print("4iar first:", count_mix_first_4iar, "knobby first:", count_mix_first_knobby)
 
     win_rate_blocked_1, max_b_1 = get_win_rate_all(data_blocked_1)
     win_rate_interleaved_1, max_i_1 = get_win_rate_all(data_interleaved_1)
     win_rate_blocked_2, max_b_2 = get_win_rate_all(data_blocked_2)
     win_rate_interleaved_2, max_i_2 = get_win_rate_all(data_interleaved_2)
 
-    print("block's 1st rule total # games - ", len(win_rate_blocked_1), "at least have # games", max_b_1)
-    print("interleaved's 1st rule total # - ", len(win_rate_interleaved_1), "at least have # games", max_i_1)
-    print("block's 2nd rule total # games - ", len(win_rate_blocked_2), "at least have # games", max_b_2)
-    print("interleaved's 2nd rule total # - ", len(win_rate_interleaved_2), "at least have # games", max_i_2)
+    # print("block's 1st rule total # games - ", len(win_rate_blocked_1), "at least have # games", max_b_1)
+    # print("interleaved's 1st rule total # - ", len(win_rate_interleaved_1), "at least have # games", max_i_1)
+    # print("block's 2nd rule total # games - ", len(win_rate_blocked_2), "at least have # games", max_b_2)
+    # print("interleaved's 2nd rule total # - ", len(win_rate_interleaved_2), "at least have # games", max_i_2)
 
     plot_win_rate()
 
     # 2) compare the probabilities of all 100 moves for each rule
-
-    fig_blocked, (ax_b_1, ax_b_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
-    fig_interleaved, (ax_i_1, ax_i_2) = plt.subplots(1, 2, figsize=(16, 8), sharey=True)
+    fig, ((ax_b_1, ax_b_2), (ax_i_1, ax_i_2)) = plt.subplots(2, 2, figsize=(12, 8), sharey=True)
     all_prob_blocked = defaultdict(list)
     all_prob_interleaved = defaultdict(list)
+
     for id in id_blocked:
-        # print("blocked - id", id)
         prob, move = get_all_move_prob(id)
         first_game = get_frist_game_by_id(id)
         prob = normalize_diff_prob(prob, first_game)
         all_prob_blocked[id] = prob
 
     for id in id_interleaved:
-        # print("interleaved - id", id)
         prob, move = get_all_move_prob(id)
         first_game = get_frist_game_by_id(id)
         prob = normalize_diff_prob(prob, first_game)
@@ -500,10 +595,43 @@ def main():
     plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked, 0)
     plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 1)
 
-    fig_blocked.suptitle('Blocked Condition', fontsize=16)
-    fig_interleaved.suptitle('Interleaved Condition', fontsize=16)
-    fig_blocked.show()
-    fig_interleaved.show()
+    # fig.show()
+
+    # 3) mixed effect model
+    df = create_dataframe(id_blocked, id_interleaved)
+    df_blocked_copy = df[df['condition'] == 'blocked'].copy()
+    df_interleaved_copy = df[df['condition'] == 'interleaved'].copy()
+
+    # access the id column
+    df_blocked_copy.loc[:, 'id'] = df_blocked_copy['id'].astype(str)
+    df_blocked_copy.loc[:, 'id'] = pd.Categorical(df_blocked_copy['id'])
+    df_interleaved_copy.loc[:, 'id'] = df_interleaved_copy['id'].astype(str)
+    df_interleaved_copy.loc[:, 'id'] = pd.Categorical(df_interleaved_copy['id'])
+
+    # - - -
+    # prob_diff ~ frac_moves + (frac_moves | id)
+    # prob_diff is dependent on frac_moves, and the effect of frac_moves varies by subject
+    # (frac_moves | id) is a random effect term, which allows the effect of frac_moves to vary by id.
+    # This means that each participant (id) can have a different slope for the relationship between frac_moves and prob_diff.
+    # - - -
+    # model_blocked = smf.mixedlm('prob_diff ~ frac_moves', df_blocked_copy, groups=df_blocked_copy['id'])
+    # result_blocked = model_blocked.fit()
+    # print(result_blocked.summary())
+    #
+    # model_interleaved = smf.mixedlm('prob_diff ~ frac_moves', df_interleaved_copy, groups=df_interleaved_copy['id'])
+    # result_interleaved = model_interleaved.fit()
+    # print(result_interleaved.summary())
+    #
+    # # Add fitted values to the DataFrames
+    # df_blocked_copy.loc[:, 'fittedvalues'] = result_blocked.fittedvalues
+    # df_interleaved_copy.loc[:, 'fittedvalues'] = result_interleaved.fittedvalues
+
+    fig_mle, ((ax_blocked_1, ax_blocked_2), (ax_interleaved_1, ax_interleaved_2)) = plt.subplots(2, 2, figsize=(12, 8))
+    plot_mixed_effect_model(df_blocked_copy, df_interleaved_copy,
+                            ax_blocked_1, ax_blocked_2,
+                            ax_interleaved_1, ax_interleaved_2)
+    plt.tight_layout()
+    # plt.show()
 
 
 if __name__ == "__main__":
