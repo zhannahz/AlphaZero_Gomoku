@@ -13,7 +13,7 @@ board = Board(width=6, height=6, n_in_row=4)
 game = Game(board)
 
 
-temp = 0.75
+temp = 0.8
 move_probs_fiar = np.zeros(6 * 6)
 move_probs_knobby = np.zeros(6 * 6)
 root = os.path.dirname(os.path.realpath(__file__))
@@ -32,30 +32,39 @@ def state_to_prob(matrix):
                 m = board.location_to_move([i, j])
                 state[m] = 1 # player 1 is the human player
     last_m = matrix[1] - matrix[0]
-    last_m = np.where(last_m == 1)
-
+    last_m = np.where(last_m == 1) # [h],[w]
+    # location to matrix of boolean
+    mask = np.zeros((6, 6))
+    mask[last_m[0][0], last_m[1][0]] = 1
+    mask = mask.astype(bool)
     board.last_move = board.location_to_move([last_m[0][0], last_m[1][0]])
 
-    return get_board_prob_maps(state)
+    return get_board_prob_maps(state, mask)
 
-def get_board_prob_maps(state):
+def get_board_prob_maps(state, mask=None):
     board.states = state
     board.current_player = 1
-    print("state", state)
-    availables = [i for i in range(36) if i not in state.keys()]
-    board.availables = availables
+    # print("state", state)
+    # get availables from board's empty position
+    board.availables = range(6 * 6)
+    board.availables = list(filter(lambda x: x not in board.states.keys(), board.availables))
+    board.availables.append(board.last_move)
+    # print("board.availables", board.availables)
+
     # get the board probability map from boardDifference[0]
     player.set_hidden_player(board, 0)
-    move_prob_fiar = player.get_hidden_probability(board, temp)
+    full_move_prob_fiar = player.get_hidden_probability(board, temp)
     player.set_hidden_player(board, 1)
-    move_prob_knobby = player.get_hidden_probability(board, temp)
+    full_move_prob_knobby = player.get_hidden_probability(board, temp)
 
-    print("move_prob_fiar", move_prob_fiar)
-    print("move_prob_knobby", move_prob_knobby)
+    # from move to matrix
+    full_move_prob_fiar = np.reshape(full_move_prob_fiar, (6, 6))
+    full_move_prob_knobby = np.reshape(full_move_prob_knobby, (6, 6))
 
-    # mask the board
+    # print("new full prob_fiar", move_prob_fiar)
+    # print("new full prob_knobby", move_prob_knobby)
 
-    move_prob_fiar = move_prob_fiar * state[2]
-    move_prob_knobby = move_prob_knobby * state[2]
+    # print("new move_prob_fiar", move_prob_fiar)
+    # print("new move_prob_knobby", move_prob_knobby)
 
-    return move_prob_fiar, move_prob_knobby
+    return full_move_prob_fiar, full_move_prob_knobby

@@ -149,10 +149,16 @@ class MCTS(object):
         # calc the move probabilities based on visit counts at the root node
         act_visits = [(act, node._n_visits)
                       for act, node in self._root._children.items()]
-        acts, visits = zip(*act_visits)
-        act_probs = softmax(1.0/temp * np.log(np.array(visits) + 1e-10))
 
-        return acts, act_probs
+        # Check if act_visits is not empty
+        if act_visits:
+            acts, visits = zip(*act_visits)
+            act_probs = softmax(1.0/temp * np.log(np.array(visits) + 1e-10))
+            return acts, act_probs
+        else:
+            # If act_visits is empty, return empty lists or handle appropriately
+            # print("No actions were visited during the playouts for state: ", state)
+            return [], []
 
     def update_with_move(self, last_move):
         """Step forward in the tree, keeping everything we already know

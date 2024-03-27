@@ -321,7 +321,7 @@ def next_filename(base="data"):
 def save_game_data(data, typename="data", threeD=True):
     ext1 = ".npy"
     ext2 = ".txt"
-    filename = next_filename(typename)
+    filename = next_filename(typename) # experiment use
     filename1 = os.path.join(f"{filename}{ext1}")
     filename2 = os.path.join(f"{filename}{ext2}")
     np.save(filename1, data)
@@ -334,6 +334,23 @@ def save_game_data(data, typename="data", threeD=True):
     else:
         with open(filename2, "w") as file:
             file.write(str(data))
+
+def save_game_data_simple(data, filename, threeD=True):
+    ext1 = ".npy"
+    ext2 = ".txt"
+    filename1 = os.path.join(f"{filename}{ext1}")
+    filename2 = os.path.join(f"{filename}{ext2}")
+    np.save(filename1, data)
+    if threeD:
+        with open(filename2, 'w') as outfile:
+            data_converted = np.array(data, dtype=np.float64)
+            for i, slice_ in enumerate(data_converted):
+                np.savetxt(outfile, slice_, fmt='%.9e')
+                outfile.write('\n')  # Separator line for readability
+    else:
+        with open(filename2, "w") as file:
+            file.write(str(data))
+    print("Data saved to ", filename1, " and ", filename2)
 
 if __name__ == "__main__":
     main()
