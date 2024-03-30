@@ -28,8 +28,8 @@ import json
 import time
 import os
 
-# four_model = "best_policy_6_6_4_1010_mid.model"
-# knobby_model = "best_policy_6_6_knobby_1011_mid.model"
+# weaker_four_model = "best_policy_6_6_4_1010_mid.model"
+# weaker_knobby_model = "best_policy_6_6_knobby_1011_mid.model"
 four_model = "best_policy_6_6_4_1008.model"
 knobby_model = "best_policy_6_6_knobby_1008.model"
 best_four_model = "best_policy_6_6_4_1008.model"
@@ -115,7 +115,7 @@ class Human(object):
         move_probs_knobby = np.zeros(board.width * board.height)
 
         if len(sensible_moves) > 0:
-            if return_prob == 2: #两个都要
+            if return_prob == 2: #return both probabilities
                 self.set_hidden_player(board, 0)
                 move_probs_fiar = self.get_hidden_probability(board, 0.75)
                 self.set_hidden_player(board, 1)

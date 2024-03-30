@@ -8,7 +8,10 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from experiment import save_game_data_simple
-from simulation import state_to_prob
+from simulation import state_to_prob, threshold_matrices
+import seaborn as sns
+
+
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18']
 # p35 - problematic params
@@ -28,6 +31,17 @@ aggregated_y1 = []
 aggregated_y2 = []
 
 root = os.path.dirname(os.path.realpath(__file__))
+colors = sns.color_palette('Paired')
+c_blue_1 = colors[0]
+c_blue_2 = colors[1]
+c_green_1 = colors[2]
+c_green_2 = colors[3]
+c_red_1 = colors[4]
+c_red_2 = colors[5]
+c_orange_1 = colors[6]
+c_orange_2 = colors[7]
+c_purple_1 = colors[8]
+c_purple_2 = colors[9]
 
 
 # return
@@ -129,10 +143,10 @@ def get_win_rate_all(data):
     sum_win = [0] * 50
     count = [0] * 50
     n = len(data)
-
-    for i in range(n):
+    for i in range(n): # for each participant
         result = data[i]
         result = [0 if r != 1 else 1 for r in result]
+
         for j in range(len(result)):  # j = game number
             sum_win[j] += result[j]
             count[j] += 1
@@ -157,14 +171,19 @@ def get_win_rate_all(data):
 def plot_win_rate():
     global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2
 
-    fig, ((ax1_1, ax1_2), (ax2_1, ax2_2)) = plt.subplots(2, 2, figsize=(16, 8), sharex=True, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), sharex=True, sharey=True)
 
     # Create x-axis
-    x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
-    x2_1 = list(range(1, len(win_rate_interleaved_1) + 1))
-    x1_2 = list(range(1, len(win_rate_blocked_2) + 1))
-    x2_2 = list(range(1, len(win_rate_interleaved_2) + 1))
-    # print("x1_1", x1_1, "x2_1", x2_1, "x1_2", x1_2, "x2_2", x2_2)
+    # x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
+    # x2_1 = list(range(1, len(win_rate_interleaved_1) + 1))
+    # x1_2 = list(range(1, len(win_rate_blocked_2) + 1))
+    # x2_2 = list(range(1, len(win_rate_interleaved_2) + 1))
+
+    # Normalize x-axis values by dividing by the length of the dataset
+    x1_1 = np.linspace(0, 1, len(win_rate_blocked_1))
+    x2_1 = np.linspace(0, 1, len(win_rate_interleaved_1))
+    x1_2 = np.linspace(0, 1, len(win_rate_blocked_2))
+    x2_2 = np.linspace(0, 1, len(win_rate_interleaved_2))
 
     # Fitting polynomial
     poly_1_1 = np.poly1d(np.polyfit(x1_1, win_rate_blocked_1, 3))
@@ -176,35 +195,40 @@ def plot_win_rate():
     poly_2_2 = np.poly1d(np.polyfit(x2_2, win_rate_interleaved_2, 3))
     smooth_i2 = poly_2_2(x2_2)
 
+    intercept_b1 = poly_1_1.coefficients[3]
+    intercept_i1 = poly_2_1.coefficients[3]
+    intercept_b2 = poly_1_2.coefficients[3]
+    intercept_i2 = poly_2_2.coefficients[3]
+
+    label_b1 = f'Intercept (first game): {intercept_b1:.3f}'
+    label_i1 = f'Intercept (first game): {intercept_i1:.3f}'
+    label_b2 = f'Intercept (second game): {intercept_b2:.3f}'
+    label_i2 = f'Intercept (second game): {intercept_i2:.3f}'
+
     # Blocked condition
-    ax1_1.plot(x1_1, win_rate_blocked_1, label="Win rate (raw)")
-    ax1_1.plot(x1_1, smooth_b1, color='red')
-    ax1_2.plot(x1_2, win_rate_blocked_2, label="Win rate (raw)")
-    ax1_2.plot(x1_2, smooth_b2, color='red')
+    ax1.scatter(x1_1, win_rate_blocked_1, color=c_green_1, s=20, label="First game")
+    ax1.plot(x1_1, smooth_b1, color=c_green_2)
+    ax1.scatter(x1_2, win_rate_blocked_2, color=c_purple_1, s=20, label="Second game")
+    ax1.plot(x1_2, smooth_b2, color=c_purple_2)
 
     # Interleaved condition
-    ax2_1.plot(x2_1, win_rate_interleaved_1, label="Win rate (raw)")
-    ax2_1.plot(x2_1, smooth_i1, color='red')
-    ax2_2.plot(x2_2, win_rate_interleaved_2, label="Win rate (raw)")
-    ax2_2.plot(x2_2, smooth_i2, color='red')
+    ax2.scatter(x2_1, win_rate_interleaved_1, color =c_green_1, s=20, label="First game")
+    ax2.plot(x2_1, smooth_i1, color=c_green_2)
+    ax2.scatter(x2_2, win_rate_interleaved_2, color=c_purple_1, s=20, label="Second game")
+    ax2.plot(x2_2, smooth_i2, color=c_purple_2)
 
     # Add title and labels
-    ax1_1.set_title("Block-learning (first game)")
-    ax1_2.set_title("Block-learning (second game)")
-
-    ax2_1.set_title("Interleaved-learning (first game)")
-    ax2_1.set_xlabel("Game Count")
-    ax2_1.set_ylabel("Win rate")
-    ax2_2.set_title("Interleaved-learning (second game)")
+    ax1.set_title("Blocked (13 participants)")
+    ax2.set_title("Interleaved (14 participants)")
+    ax1.set_xlabel("Rounds of Game (in fraction)")
+    ax2.set_ylabel("Win rate")
 
     # Add legend
-    ax1_1.legend()
-    ax1_2.legend()
-    ax2_1.legend()
-    ax2_2.legend()
+    ax1.legend(loc='upper right')
+    ax2.legend(loc='upper right')
 
     # Adjust layout to prevent overlapping
-    plt.tight_layout()
+    # plt.tight_layout()
 
     # Show plot
     plt.show()
@@ -212,11 +236,13 @@ def plot_win_rate():
 
 def get_all_move_prob(id):
     global root
-    print("id", id)
+    # print("id", id)
     all_moves_dict = defaultdict(list)
     all_prob_dict = defaultdict(list)
     all_prob_dict_new = defaultdict(list)
     all_games_round = []
+    all_move_pos_first = defaultdict(list)
+    all_move_pos_last = defaultdict(list)
 
     # iterate through all games played by the participant
     for round in range(1, 60):  # 60 is the max #games played so far
@@ -260,9 +286,19 @@ def get_all_move_prob(id):
             # check_path_f = path_f_new + ".npy"
             # -------------------------
 
+            # describe statistics of the probability matrices
+            move_pos_first = defaultdict(list)
+            move_pos_last = defaultdict(list)
             for s in range(n_steps):
                 if np.all(move[s][0] == None) or np.all(move[s][1] == None): # skip if the move is None
                     continue
+                # Check if this is the last non-None move in the sequence
+                move_pos_first[s] = s==0
+                is_last_move = np.all(move[s + 1] == None)
+                if is_last_move:
+                    print(f"{id}: Round {round}, Move {s} is the last move.")
+                move_pos_last[s] = is_last_move
+
                 step = move[s][1] - move[s][0]
                 move_dict[s] = step
 
@@ -286,6 +322,8 @@ def get_all_move_prob(id):
                 all_moves_dict[n + i] = move_dict[i]
                 all_prob_dict[n + i] = prob_dict[i]
                 all_prob_dict_new[n + i] = prob_dict_new[i]
+                all_move_pos_first[n + i] = move_pos_first[i]
+                all_move_pos_last[n + i] = move_pos_last[i]
 
             # NEW save if new prob files are not found
             # -------------------------
@@ -303,69 +341,131 @@ def get_all_move_prob(id):
         if len(all_prob_dict_new[m]) != 0:
             all_prob_dict_new[m] = [all_prob_dict_new[m][0][mask], all_prob_dict_new[m][1][mask]]
 
-    return all_prob_dict, all_moves_dict, all_prob_dict_new, all_games_round
+    return all_prob_dict, all_moves_dict, all_prob_dict_new, all_games_round, all_move_pos_first, all_move_pos_last
 
 
 def plot_mixed_effect_model(df_blocked, df_interleaved, ax_blocked_1, ax_blocked_2, ax_interleaved_1, ax_interleaved_2):
-    # Blocked condition
+    # === Blocked condition
     # (frac_moves vs. prob_diff)
     df_blocked_first_half = df_blocked[df_blocked['frac_moves'] < 0.5].copy()
     df_blocked_second_half = df_blocked[df_blocked['frac_moves'] >= 0.5].copy()
 
-    # First half of blocked data
+    # = First half of blocked data
     ax_blocked_1.scatter('frac_moves', 'prob_diff_new', data=df_blocked_first_half,
-                         color='black', alpha=0.3, label='Blocked (First Half)')
-    model_blocked_first_half = smf.mixedlm('prob_diff_new ~ frac_moves', df_blocked_first_half, groups=df_blocked_first_half['id'])
-    result_blocked_first_half = model_blocked_first_half.fit()
-    print("result_blocked_first_half\n")
-    print(result_blocked_first_half.summary())
-    df_blocked_first_half.loc[:, 'fittedvalues'] = result_blocked_first_half.fittedvalues
-    ax_blocked_1.plot('frac_moves', 'fittedvalues', data=df_blocked_first_half, color='red', label='Blocked (First Half - LMEM)')
+                         color=c_green_1, alpha=0.3, s=5, label='ProbGame1 - ProbGame2')
+    model_blocked_first_half = smf.mixedlm('prob_diff_new ~ frac_moves', df_blocked_first_half, groups=df_blocked_first_half['id'], re_formula="1 + frac_moves")
+    result_blocked_mle_1 = model_blocked_first_half.fit(method='nm', maxiter=1000, ftol=1e-2)
+    print("result_blocked_mle_1\n")
+    print(result_blocked_mle_1.summary())
+    slope = result_blocked_mle_1.params['frac_moves']
+    intercept = result_blocked_mle_1.params['Intercept']
+    label = f'Slope: {slope:.3f}\nIntercept: {intercept:.3f}'
+    # df_blocked_first_half.loc[:, 'fittedvalues'] = result_blocked_mle_1.fittedvalues
+    # ax_blocked_1.plot('frac_moves', 'fittedvalues', data=df_blocked_first_half, color=c_green_2, alpha=0.2, label=None)
 
-    # Second half of blocked data
+    # Accessing variance components
+    group_variance = result_blocked_mle_1.cov_re.iloc[0, 0]  # Accessing the variance for the random intercept
+
+    # Plotting fixed effects predictions with group variance as shaded area
+    frac_moves_range = np.linspace(0, 0.5, 100)
+    predicted_prob_diff = result_blocked_mle_1.params['Intercept'] + result_blocked_mle_1.params[
+                            'frac_moves'] * frac_moves_range
+    ax_blocked_1.plot(frac_moves_range, predicted_prob_diff, color=c_green_2, label=label)
+    ax_blocked_1.fill_between(frac_moves_range, predicted_prob_diff - np.sqrt(group_variance),
+                              predicted_prob_diff + np.sqrt(group_variance), color=c_green_1, alpha=0.5,
+                              label=f'Group Variance: {group_variance:.3f}')
+
+    # = Second half of blocked data
     ax_blocked_2.scatter('frac_moves', 'prob_diff_new', data=df_blocked_second_half,
-                         color='black', alpha=0.3, label='Blocked (Second Half)')
-    model_blocked_second_half = smf.mixedlm('prob_diff_new ~ frac_moves', df_blocked_second_half, groups=df_blocked_second_half['id'])
-    result_blocked_second_half = model_blocked_second_half.fit()
-    print("result_blocked_second_half\n")
-    print(result_blocked_second_half.summary())
-    df_blocked_second_half.loc[:, 'fittedvalues'] = result_blocked_second_half.fittedvalues
-    ax_blocked_2.plot('frac_moves', 'fittedvalues', data=df_blocked_second_half, color='red', label='Blocked (Second Half - LMEM)')
+                         color=c_purple_1, alpha=0.3, s=5, label='ProbGame1 - ProbGame2')
+    model_blocked_second_half = smf.mixedlm('prob_diff_new ~ frac_moves', df_blocked_second_half, groups=df_blocked_second_half['id'], re_formula="1 + frac_moves")
+    result_blocked_mle_2 = model_blocked_second_half.fit(method='nm', maxiter=1000, ftol=1e-2)
+    print("result_blocked_mle_2\n")
+    print(result_blocked_mle_2.summary())
+    slope = result_blocked_mle_2.params['frac_moves']
+    intercept = result_blocked_mle_2.params['Intercept']
+    label = f'Slope: {slope:.3f}\nIntercept: {intercept:.3f}'
+    # df_blocked_second_half.loc[:, 'fittedvalues'] = result_blocked_mle_2.fittedvalues
+    # ax_blocked_2.plot('frac_moves', 'fittedvalues', data=df_blocked_second_half, color=c_purple_2, alpha=0.2, label=None)
 
-    # Interleaved condition
+    # Accessing variance components
+    group_variance = result_blocked_mle_2.cov_re.iloc[0, 0]
+
+    # Plotting fixed effects predictions with group variance as shaded area
+    frac_moves_range = np.linspace(0.5, 1, 100)
+    predicted_prob_diff = result_blocked_mle_2.params['Intercept'] + result_blocked_mle_2.params[
+        'frac_moves'] * frac_moves_range
+    ax_blocked_2.plot(frac_moves_range, predicted_prob_diff, color=c_purple_2, label=label)
+    ax_blocked_2.fill_between(frac_moves_range, predicted_prob_diff - np.sqrt(group_variance),
+                                predicted_prob_diff + np.sqrt(group_variance), color=c_purple_1, alpha=0.5,
+                                label=f'Group Variance: {group_variance:.3f}')
+
+    # === Interleaved condition
     # (odd and even games)
     df_interleaved_odd = df_interleaved[df_interleaved['round'] % 2 != 0].copy()
     df_interleaved_even = df_interleaved[df_interleaved['round'] % 2 == 0].copy()
 
-    # Odd indices of interleaved data
-    ax_interleaved_1.scatter('move_number', 'prob_diff_new', data=df_interleaved_odd,
-                             color='black', alpha=0.3, label='Interleaved (Odd)')
-    model_interleaved_odd = smf.mixedlm('prob_diff_new ~ move_number', df_interleaved_odd, groups=df_interleaved_odd['id'])
-    result_interleaved_odd = model_interleaved_odd.fit()
-    print("result_interleaved_odd\n")
-    print(result_interleaved_odd.summary())
-    df_interleaved_odd['fittedvalues'] = result_interleaved_odd.fittedvalues
-    ax_interleaved_1.plot('move_number', 'fittedvalues', data=df_interleaved_odd, color='red', label='Interleaved (Odd - LMEM)')
+    # = Odd indices of interleaved data
+    ax_interleaved_1.scatter('frac_moves', 'prob_diff_new', data=df_interleaved_odd,
+                             color=c_green_1, alpha=0.3, s=5, label='ProbGame1 - ProbGame2')
+    model_interleaved_odd = smf.mixedlm('prob_diff_new ~ frac_moves', df_interleaved_odd, groups=df_interleaved_odd['id'], re_formula="1 + frac_moves")
+    result_interleaved_mle_1 = model_interleaved_odd.fit(method='nm', maxiter=1000, ftol=1e-2)
+    print("result_interleaved_mle_1\n")
+    print(result_interleaved_mle_1.summary())
+    slope = result_interleaved_mle_1.params['frac_moves']
+    intercept = result_interleaved_mle_1.params['Intercept']
+    label = f'Slope: {slope:.3f}\nIntercept: {intercept:.3f}'
+    # df_interleaved_odd['fittedvalues'] = result_interleaved_mle_1.fittedvalues
+    # ax_interleaved_1.plot('frac_moves', 'fittedvalues', data=df_interleaved_odd, color=c_green_2, alpha=0.2, label=None)
 
-    # Even indices of interleaved data
-    ax_interleaved_2.scatter('move_number', 'prob_diff_new', data=df_interleaved_even, alpha=0.5, label='Interleaved (Even)')
-    model_interleaved_even = smf.mixedlm('prob_diff_new ~ move_number', df_interleaved_even,
-                                         groups=df_interleaved_even['id'])
-    result_interleaved_even = model_interleaved_even.fit()
-    print("result_interleaved_even\n")
-    print(result_interleaved_even.summary())
-    df_interleaved_even['fittedvalues'] = result_interleaved_even.fittedvalues
-    ax_interleaved_2.plot('move_number', 'fittedvalues', data=df_interleaved_even, color='red', label='Interleaved (Even - LMEM)')
+    # Accessing variance components
+    group_variance = result_interleaved_mle_1.cov_re.iloc[0, 0]  # Accessing the variance for the random intercept
+
+    # Plotting fixed effects predictions with group variance as shaded area
+    frac_moves_range = np.linspace(0, 1, 100)
+    predicted_prob_diff = result_interleaved_mle_1.params['Intercept'] + result_interleaved_mle_1.params[
+        'frac_moves'] * frac_moves_range
+    ax_interleaved_1.plot(frac_moves_range, predicted_prob_diff, color=c_green_2, label=label)
+    ax_interleaved_1.fill_between(frac_moves_range, predicted_prob_diff - np.sqrt(group_variance),
+                                 predicted_prob_diff + np.sqrt(group_variance), color=c_green_1, alpha=0.5,
+                                 label=f'Group Variance: {group_variance:.3f}')
+
+    # = Even indices of interleaved data
+    ax_interleaved_2.scatter('frac_moves', 'prob_diff_new', data=df_interleaved_even,
+                             color=c_purple_1, alpha=0.3, s=5, label='ProbGame1 - ProbGame2')
+    model_interleaved_even = smf.mixedlm('prob_diff_new ~ frac_moves', df_interleaved_even, groups=df_interleaved_even['id'], re_formula="1 + frac_moves")
+    result_interleaved_mle_2 = model_interleaved_even.fit(method='nm', maxiter=1000, ftol=1e-2)
+    print("result_interleaved_mle_2\n")
+    print(result_interleaved_mle_2.summary())
+    slope = result_interleaved_mle_2.params['frac_moves']
+    intercept = result_interleaved_mle_2.params['Intercept']
+    label = f'Slope: {slope:.3f}\nIntercept: {intercept:.3f}'
+    # df_interleaved_even['fittedvalues'] = result_interleaved_mle_2.fittedvalues
+    # ax_interleaved_2.plot('frac_moves', 'fittedvalues', data=df_interleaved_even, color=c_purple_2, alpha=0.2, label=None)
+
+    # Accessing variance components
+    group_variance = result_interleaved_mle_2.cov_re.iloc[0, 0]  # Accessing the variance for the random intercept
+
+    # Plotting fixed effects predictions with group variance as shaded area
+    frac_moves_range = np.linspace(0, 1, 100)
+    predicted_prob_diff = result_interleaved_mle_2.params['Intercept'] + result_interleaved_mle_2.params[
+        'frac_moves'] * frac_moves_range
+    ax_interleaved_2.plot(frac_moves_range, predicted_prob_diff, color=c_purple_2, label=label)
+    ax_interleaved_2.fill_between(frac_moves_range, predicted_prob_diff - np.sqrt(group_variance),
+                                    predicted_prob_diff + np.sqrt(group_variance), color=c_purple_1, alpha=0.5,
+                                    label=f'Group Variance: {group_variance:.3f}')
+
+
 
     # Set labels and titles for all subplots
     for ax in [ax_blocked_1, ax_blocked_2, ax_interleaved_1, ax_interleaved_2]:
         ax.set_ylabel('Probability Difference')
-        ax.legend()
+        ax.legend(loc='upper right')
 
-    ax_blocked_1.set_title('Blocked (First Half)')
-    ax_blocked_2.set_title('Blocked (Second Half)')
-    ax_interleaved_1.set_title('Interleaved (Odd)')
-    ax_interleaved_2.set_title('Interleaved (Even)')
+    ax_blocked_1.set_title('Blocked, First Game (13 participants)')
+    ax_blocked_2.set_title('Blocked, Second Game (13 participants)')
+    ax_interleaved_1.set_title('Interleaved, First Game (14 participants)')
+    ax_interleaved_2.set_title('Interleaved, Second Game (14 participants)')
 
 def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
     y_diff = []
@@ -378,7 +478,8 @@ def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
         all_round.append(dataFrame['round'].iloc[i])
         all_move.append(dataFrame['move_number'].iloc[i])
         all_move_fraction.append(dataFrame['frac_moves'].iloc[i])
-        y_diff.append(dataFrame['prob_diff_new'].iloc[i])
+        # y_diff.append(dataFrame['prob_diff'].iloc[i])
+        y_diff.append(dataFrame['prob_diff'].iloc[i])
 
     x = np.array(all_move)
     y_diff = [0 if v is None else v for v in y_diff]
@@ -430,16 +531,21 @@ def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
     model_2 = np.poly1d(np.polyfit(x_2, y_filtered_2, 1))
     y_smooth_2 = model_2(x_2)
 
-    # Extracting slopes from the models
-    slope_1 = model_1.coefficients[0]  # The first coefficient is the slope for np.poly1d models
-    slope_2 = model_2.coefficients[0]
-    slope_1_formatted = "{:.2e}".format(slope_1)
-    slope_2_formatted = "{:.2e}".format(slope_2)
+    # Extracting slopes and intercepts from the models
+    slope_1, intercept_1 = model_1.coefficients
+    slope_2, intercept_2 = model_2.coefficients
+
+    # Formatting slope and intercept for the label
+    label_1 = f'Slope: {slope_1:.3f}\nIntercept: {intercept_1:.3f}'
+    label_2 = f'Slope: {slope_2:.3f}\nIntercept: {intercept_2:.3f}'
+
+    # slope_1_formatted = "{:.2e}".format(slope_1)
+    # slope_2_formatted = "{:.2e}".format(slope_2)
 
     ax1.plot(x_1, y_filtered_1, 'o', color='black', markersize=2, alpha=0.1)
     ax2.plot(x_2, y_filtered_2, 'o', color='black', markersize=2, alpha=0.1)
-    ax1.plot(x_1, y_smooth_1, color='red', label=f'Slope: {slope_1_formatted}')
-    ax2.plot(x_2, y_smooth_2, color='red', label=f'Slope: {slope_2_formatted}')
+    ax1.plot(x_1, y_smooth_1, color='red', label=label_1)
+    ax2.plot(x_2, y_smooth_2, color='red', label=label_2)
 
     if (condition == 0):
         ax1.set_title('Blocked Condition (first game)')
@@ -459,26 +565,28 @@ def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
 def normalize_and_diff_prob(prob, first_game):
     # a new list with length of prob
     diff = [0] * len(prob)
+    base = 10
 
     for i in range(len(prob)):
         prob_fiar = prob[i][0]
         prob_knobby = prob[i][1]
+
         if (prob_fiar != 0):
-            prob_fiar = math.log(prob_fiar[0], 10)
+            prob_fiar = math.log(prob_fiar[0], base)
         else:
             prob_fiar = 0
 
         if (prob_knobby != 0):
-            prob_knobby = math.log(prob_knobby[0], 10)
+            prob_knobby = math.log(prob_knobby[0], base)
         else:
             prob_knobby = 0
 
         if (first_game == 0):  # fiar
             diff[i] = prob_fiar - prob_knobby
-            diff[i] = float(diff[i])
         elif (first_game == 1):  # knobby
             diff[i] = prob_knobby - prob_fiar
-            diff[i] = float(diff[i])
+
+        diff[i] = float(diff[i])
 
     return diff
 
@@ -534,7 +642,19 @@ def check_data_quality(all_data):
 def create_dataframe(id_blocked, id_interleaved):
     data = []
     for id in id_blocked + id_interleaved:
-        prob, move, prob_new, round = get_all_move_prob(id)
+        prob, move, prob_new, round, is_first_move, is_last_move = get_all_move_prob(id)
+        # get prob for each rule
+        prob_four = []
+        prob_knobby = []
+        prob_new_four = []
+        prob_new_knobby = []
+        for i in range(len(prob)):
+            prob_four.append(prob[i][0])
+            prob_knobby.append(prob[i][1])
+        for i in range(len(prob_new)):
+            prob_new_four.append(prob_new[i][0])
+            prob_new_knobby.append(prob_new[i][1])
+
         first_game = get_frist_game_by_id(id)
         prob = normalize_and_diff_prob(prob, first_game)
         prob_new = normalize_and_diff_prob(prob_new, first_game)
@@ -543,11 +663,13 @@ def create_dataframe(id_blocked, id_interleaved):
         for i in range(len(prob)):
             frac_moves = (i+1) / len(prob)
             data.append([id, condition, first_game, round[i],
-                         i+1, frac_moves, prob[i], prob_new[i]])
+                         i+1, frac_moves, prob[i], prob_new[i],
+                         prob_four[i], prob_knobby[i], prob_new_four[i], prob_new_knobby[i],
+                         is_first_move[i], is_last_move[i]])
 
     df = pd.DataFrame(data,
                 columns=['id', 'condition', 'first_game', 'round',
-                         'move_number', 'frac_moves', 'prob_diff', 'prob_diff_new'])
+                         'move_number', 'frac_moves', 'prob_diff', 'prob_diff_new', 'four_old', 'knobby_old', 'four_new', 'knobby_new', 'is_first_move', 'is_last_move'])
 
     # test =================
     # Calculate descriptive statistics for prob_diff
@@ -655,22 +777,23 @@ def main():
     win_rate_interleaved_2, max_i_2 = get_win_rate_all(data_interleaved_2)
 
     plot_win_rate()
-    
+
+
     # create dataframe for plotting
     df = create_dataframe(id_blocked, id_interleaved)
 
     # 2) compare the probabilities of all 100 moves for each rule
-    fig, ((ax_b_1, ax_b_2), (ax_i_1, ax_i_2)) = plt.subplots(2, 2, figsize=(12, 8))
-    plt.tight_layout(pad=5, h_pad=5, w_pad=1)  # Adjust the padding, 'h_pad' controls the height between rows
+    # fig, ((ax_b_1, ax_b_2), (ax_i_1, ax_i_2)) = plt.subplots(2, 2, figsize=(12, 8))
+    # plt.tight_layout(pad=5, h_pad=5, w_pad=1)  # Adjust the padding, 'h_pad' controls the height between rows
 
     # get block and interleaved data
-    all_prob_blocked = df[df['condition'] == 'blocked'].copy()
-    all_prob_interleaved = df[df['condition'] == 'interleaved'].copy()
+    # all_prob_blocked = df[df['condition'] == 'blocked'].copy()
+    # all_prob_interleaved = df[df['condition'] == 'interleaved'].copy()
 
-    plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked, 0)
-    plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 1)
+    # plot_move_prob_comparison(ax_b_1, ax_b_2, all_prob_blocked, 0)
+    # plot_move_prob_comparison(ax_i_1, ax_i_2, all_prob_interleaved, 1)
 
-    fig.show()
+    # fig.show()
 
     # 3) mixed effect model
     df_blocked_copy = df[df['condition'] == 'blocked'].copy()
