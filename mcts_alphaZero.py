@@ -153,12 +153,28 @@ class MCTS(object):
         # Check if act_visits is not empty
         if act_visits:
             acts, visits = zip(*act_visits)
+            # print("--acts: \n", acts)
+            # print("--visits: \n", visits)
             act_probs = softmax(1.0/temp * np.log(np.array(visits) + 1e-10))
+            # print("--act_probs: \n", act_probs)
             return acts, act_probs
         else:
-            # If act_visits is empty, return empty lists or handle appropriately
-            # print("No actions were visited during the playouts for state: ", state)
-            return [], []
+            # If act_visits is empty, return uniform visits based on # of playouts
+            print("--No actions were visited during the playouts for state: ", state.availables)
+            acts = tuple(state.availables)
+
+            # Calculate visits per action, ensuring the total is # of playouts
+            visits_per_action = self._n_playout // len(acts)  # This will do floor division
+            remainder = self._n_playout % len(acts)  # Calculate remainder to distribute
+
+            # Create a list of visits, adding an extra visit to the first 'remainder' actions
+            visits = [visits_per_action + (1 if i < remainder else 0) for i in range(len(acts))]
+
+            print("--acts: \n", acts)
+            print("--visits: \n", tuple(visits))
+            act_probs = softmax(1.0 / temp * np.log(np.array(visits) + 1e-10))
+            print("--act_probs: \n", act_probs)
+            return acts, tuple(act_probs)
 
     def update_with_move(self, last_move):
         """Step forward in the tree, keeping everything we already know

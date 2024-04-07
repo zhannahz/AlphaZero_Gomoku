@@ -87,12 +87,15 @@ class Human(object):
         best_policy = PolicyValueNet(board.width, board.height, model_file=model)
         self.mcts_hidden = MCTSPlayer(best_policy.policy_value_fn,
                                       c_puct=5,
-                                      n_playout=400)
+                                      n_playout=1000)
 
     def get_hidden_probability(self, board, temp):
         move_probs = np.zeros(board.width * board.height)
         acts, probs = self.mcts_hidden.mcts.get_move_probs(board, temp)
         move_probs[list(acts)] = probs
+        # check if the board is zero
+        if np.sum(move_probs) == 0:
+            print("get_hidden_probability: move_probs is zero")
         return move_probs
 
     # 1 -- Experiment Only --

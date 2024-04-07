@@ -210,23 +210,23 @@ class Board(object):
 
         return False, -1
 
-    def game_end(self):
+    def game_end(self, m=2):
         """Check whether the game is ended or not"""
         global params
         params = load_params_from_file()
-        if (params is None):
+        if params is None and m == 2:
             # go to an upper directory
             parent_dir = os.path.dirname(os.getcwd())
             params = load_params_from_file(parent_dir + "/params.json")
-        if params["model"] == 0:
-            # Check whether the 4iar game is ended or not
+            m = params["model"]
+        if m == 0:
             win, winner = self.has_a_winner()
-        elif params["model"] == 1:
-            # Check whether the knobby game is ended or not
+        elif m == 1:
             win, winner = self.has_a_winner_knobby()
         else:
             print("Invalid model type")
             return False, -1
+
         if win:
             return True, winner
         elif not len(self.availables):
