@@ -221,6 +221,7 @@ def plot_winrate(data_blocked_1, data_interleaved_1, data_blocked_2, data_interl
     ax2.set_title('Win Distribution - Interleaved (n=13)')
     ax2.legend()
 
+    plt.tight_layout(pad=2.0)
     plt.show()
     # Print the bin counts for each condition
     # print("Counts for Data Blocked 1:", counts_blocked_1)
@@ -279,15 +280,15 @@ def plot_win_rate(count):
     label_i2 = f'Intercept (second game): {intercept_i2:.3f}'
 
     # Blocked condition
-    ax1.scatter(x1_1, win_rate_blocked_1, color=c_green_1, s=20, label="First game")
+    ax1.scatter(x1_1, win_rate_blocked_1, color=c_green_1, alpha=0.7, s=20, label=label_b1)
     ax1.plot(x1_1, smooth_b1, color=c_green_2)
-    ax1.scatter(x1_2, win_rate_blocked_2, color=c_purple_1, s=20, label="Second game")
+    ax1.scatter(x1_2, win_rate_blocked_2, color=c_purple_1, alpha=0.7, s=20, label=label_b2)
     ax1.plot(x1_2, smooth_b2, color=c_purple_2)
 
     # Interleaved condition
-    ax2.scatter(x2_1, win_rate_interleaved_1, color =c_green_1, s=20, label="First game")
+    ax2.scatter(x2_1, win_rate_interleaved_1, color =c_green_1, alpha=0.7, s=20, label=label_i1)
     ax2.plot(x2_1, smooth_i1, color=c_green_2)
-    ax2.scatter(x2_2, win_rate_interleaved_2, color=c_purple_1, s=20, label="Second game")
+    ax2.scatter(x2_2, win_rate_interleaved_2, color=c_purple_1, alpha=0.7, s=20, label=label_i2)
     ax2.plot(x2_2, smooth_i2, color=c_purple_2)
 
     # Add title and labels
@@ -297,13 +298,15 @@ def plot_win_rate(count):
     ax1.set_xlabel("Rounds of Game (in fraction)")
     ax1.set_ylabel("Win rate")
     ax1.set_xlim(0, 21)
+    ax1.set_xticks(np.arange(0, 21, 5))
     ax2.set_xlim(0, 26)
+    ax2.set_xticks(np.arange(0, 26, 5))
+    # ax1.set_xlim(0, 1)
+    # ax2.set_xlim(0, 1)
 
-    # Add legend
-    ax1.legend(loc='upper right')
-    ax2.legend(loc='upper right')
-
-    # Show plot
+    plt.tight_layout(pad=3.0)
+    ax1.legend(loc='upper left')
+    ax2.legend(loc='upper left')
     plt.show()
 
 
@@ -503,6 +506,7 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
             for id in df['id'].unique():
                 df_id = df[df['id'] == id]
                 ax.plot('frac_currGame', 'fittedvalues', data=df_id, color=color_light, alpha=0.4, label='_nolegend_')
+
             # general trend line
             frac_moves_range = np.linspace(0, 1, 100)
             predicted_rt = intercept + slope * frac_moves_range
@@ -510,7 +514,8 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
 
         # Set labels and titles for all subplots
         for ax in [ax_b_1c, ax_i_1c]:
-            ax.legend(loc='upper right')
+            ax.legend(loc='upper right', fontsize=10)
+
         ax_b_1c.set_xlabel('Game Progress (Fraction)')
         ax_b_1c.set_ylabel('Reaction time')
         ax_b_1c.set_title('Blocked (n=13)')
@@ -535,8 +540,8 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
         slope_2 = slope_1 + result_blocked_mle.params['game_type:frac_currGame']
         intercept_2 = intercept_1 + result_blocked_mle.params['game_type']
         group_variance = result_blocked_mle.cov_re.iloc[0, 0]
-        label_1 = f'y = {slope_1:.3f}\nx+{intercept_1:.3f}'
-        label_2 = f'y = {slope_2:.3f}\nx{intercept_2:.3f}\n(group variance: {group_variance:.3f})'
+        label_1 = f'y = {slope_1:.3f}x+{intercept_1:.3f}'
+        label_2 = f'y = {slope_2:.3f}x{intercept_2:.3f}\n(group variance: {group_variance:.3f})'
         df_blocked.loc[:, 'fittedvalues'] = result_blocked_mle.fittedvalues
         df_b_first = df_blocked[df_blocked['game_type'] == 0].copy()
         df_b_second = df_blocked[df_blocked['game_type'] == 1].copy()
@@ -571,8 +576,8 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
         slope_2 = slope_1 + result_interleaved_mle.params['game_type:frac_currGame']
         intercept_2 = intercept_1 + result_interleaved_mle.params['game_type']
         group_variance = result_interleaved_mle.cov_re.iloc[0, 0]
-        label_1 = f'y = {slope_1:.3f}\nx+{intercept_1:.3f}'
-        label_2 = f'y = {slope_2:.3f}\nx{intercept_2:.3f}\n(group variance: {group_variance:.3f})'
+        label_1 = f'y = {slope_1:.3f}x+{intercept_1:.3f}'
+        label_2 = f'y = {slope_2:.3f}x{intercept_2:.3f}\n(group variance: {group_variance:.3f})'
         df_interleaved.loc[:, 'fittedvalues'] = result_interleaved_mle.fittedvalues
 
         # iterate through each participant to plot individual lines
@@ -588,6 +593,7 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
             df_id = df_i_second[df_i_second['id'] == id]
             if id == df_i_second['id'].unique()[0]:
                 ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label=label_2)
+
             else:
                 ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label='_nolegend_')
 
@@ -604,6 +610,9 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
         ax_b_1b.set_ylabel('Probability Difference')
         ax_b_1b.set_title('Blocked (n=13)')
         ax_i_1b.set_title('Interleaved (n=13)')
+
+        ax_b_1b.legend(loc='upper right', fontsize=10)
+        ax_i_1b.legend(loc='upper right', fontsize=10)
 
         ax_b_1b.set_xlim(0, 1)
         ax_i_1b.set_xlim(0, 1)
@@ -924,11 +933,13 @@ def check_data_quality(all_data):
 
     # plot win rate distribution
     n_bin = round(math.sqrt(len(win_rate_dict)))
+    plt.figure(figsize=(4, 4))
     plt.hist(win_rate_dict.values(), bins=5, alpha=0.5, color='black', edgecolor='white')
-    plt.xlabel('Win Rate (within individual)')
+    plt.xlabel('Win Rate')
     plt.ylabel('Frequency')
     plt.yticks(range(0, 10, 1))
     plt.title('Win Rate Distribution (n={})'.format(len(win_rate_dict)))
+    plt.xticks(np.arange(0, 1, 0.1))
     plt.show()
 
 def create_dataframe(id_blocked, id_interleaved):
@@ -1146,12 +1157,16 @@ def main():
 
 
     fig_mle_1, ((ax_blocked_1a, ax_blocked_2a), (ax_interleaved_1a, ax_interleaved_2a)) = plt.subplots(2, 2, figsize=(10, 8), sharey=True)
-    fig_mle_2, (ax_blocked_b, ax_interleaved_b) = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
-    fig_mle_rt, (ax_blocked_rt, ax_interleaved_rt) = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
+    fig_mle_2, (ax_blocked_b, ax_interleaved_b) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    plt.tight_layout(pad=3.0)
+    fig_mle_rt, (ax_blocked_rt, ax_interleaved_rt) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    plt.tight_layout(pad=3.0)
     plot_mixed_effect_model(df_blocked_copy, df_interleaved_copy,
                             ax_blocked_1a, ax_blocked_2a, ax_interleaved_1a, ax_interleaved_2a,
                             ax_blocked_b, ax_interleaved_b,
                             ax_blocked_rt, ax_interleaved_rt)
+
+
     plt.show()
 
 
