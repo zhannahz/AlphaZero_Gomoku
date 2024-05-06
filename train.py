@@ -82,29 +82,6 @@ class TrainPipeline():
                                     winner))
         return extend_data
 
-        """
-        extend_data = []
-        for state, mcts_prob, winner in play_data:
-            # Flip horizontally
-            equi_state_h = np.array([np.fliplr(s) for s in state])
-            equi_mcts_prob_h = np.fliplr(np.flipud(
-                    mcts_prob.reshape(self.board_height, self.board_width)))
-            extend_data.append((equi_state_h, np.flipud(equi_mcts_prob_h).flatten(), winner))
-
-            # Flip vertically
-            equi_state_v = np.array([np.flipud(s) for s in state])
-            equi_mcts_prob_v = np.flipud(np.flipud(
-                    mcts_prob.reshape(self.board_height, self.board_width)))
-            extend_data.append((equi_state_v, np.flipud(equi_mcts_prob_v).flatten(), winner))
-
-            # Flip both horizontally and vertically
-            equi_state_hv = np.array([np.fliplr(s) for s in equi_state_v])
-            equi_mcts_prob_hv = np.fliplr(equi_mcts_prob_v)
-            extend_data.append((equi_state_hv, np.flipud(equi_mcts_prob_hv).flatten(), winner))
-
-        return extend_data
-        """
-
     def collect_selfplay_data(self, n_games=1):
         """collect self-play data for training"""
         for i in range(n_games):

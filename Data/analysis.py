@@ -11,7 +11,8 @@ from experiment import save_game_data_simple
 from simulation import state_to_prob, threshold_matrices
 import seaborn as sns
 
-
+# Set the global font
+plt.rcParams['font.family'] = ['Arial', 'sans-serif']
 
 deprecated_id = ['p03', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p35', 'p16', 'p18', 'p13']
 # p35 - problematic params
@@ -26,14 +27,16 @@ win_rate_blocked_1 = []
 win_rate_interleaved_1 = []
 win_rate_blocked_2 = []
 win_rate_interleaved_2 = []
+win_rate_knobby_all = []
+win_rate_fiar_all = []
 
 aggregated_y1 = []
 aggregated_y2 = []
 
 root = os.path.dirname(os.path.realpath(__file__))
 colors = sns.color_palette('Paired')
-c_blue_1 = colors[0] #lighter
-c_blue_2 = colors[1] #darker
+c_blue_1 = colors[0]  # lighter
+c_blue_2 = colors[1]  # darker
 c_green_1 = colors[2]
 c_green_2 = colors[3]
 c_red_1 = colors[4]
@@ -71,7 +74,7 @@ def group_by_condition(params_list):
     global paths_blocked, paths_interleaved, id_blocked, id_interleaved
 
     for id, file_paths in params_list.items():
-        #print("id", id, "file_paths", file_paths)
+        # print("id", id, "file_paths", file_paths)
         for path in file_paths:
             with open(path, 'r') as file:
                 params_data = json.load(file)
@@ -143,12 +146,13 @@ def calculate_win(params_path):
     else:
         return id, first_game, results_knobby, results_four
 
+
 # return the win rate for all games
 # given the cumulative results
 def get_win_rate_all(data):
     win_rate = []
-    sum_win = [0] * 50
-    count = [0] * 50
+    sum_win = [0] * 60
+    count = [0] * 60
     n = len(data)
     for id, list in data.items():
         result = list
@@ -164,8 +168,7 @@ def get_win_rate_all(data):
     set_in_count = set(count)
     for i in range(len(set_in_count)):
         if count[i] < max:
-            max = count[i-1]
-    print("max", max)
+            max = count[i - 1]
     count = [x for x in count if x >= max]  # make sure each point has at least 8 data points
     sum_win = sum_win[:len(count)]  # slice to the same length as count
 
@@ -177,70 +180,75 @@ def get_win_rate_all(data):
     return win_rate, max
 
 
-# Plot 4 figures:
-# win rates for blocked & interleaved conditions
-# in the first & second games
-def plot_winrate(data_blocked_1, data_interleaved_1, data_blocked_2, data_interleaved_2):
-    global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), sharex=True, sharey=True)
+def get_win_rate_by_order(dataframe):
+    # return win rates across participants by 'play_order' column
+    win_rate_player_first = []
+    win_rate_player_second = []
+    win_rate_player_first.append(0)  # first round is always 0
+    win_rate_player_second.append(0)  # first round is always 0
 
-    bins = 10
-    wins_blocked_1 = []
-    wins_interleaved_1 = []
-    wins_blocked_2 = []
-    wins_interleaved_2 = []
+    games_per_round = {}
+    win_per_round = {}
 
-    # Collect all wins
-    for k, v in data_blocked_1.items():
-        wins = [index for index, value in enumerate(v) if value == 1]
-        wins_blocked_1.extend(wins)
-    for k, v in data_blocked_2.items():
-        wins = [index for index, value in enumerate(v) if value == 1]
-        wins_blocked_2.extend(wins)
-    for k, v in data_interleaved_1.items():
-        wins = [index for index, value in enumerate(v) if value == 1]
-        wins_interleaved_1.extend(wins)
-    for k, v in data_interleaved_2.items():
-        wins = [index for index, value in enumerate(v) if value == 1]
-        wins_interleaved_2.extend(wins)
+    df_player_first = dataframe[dataframe['play_order'] == 1].copy()
+    df_player_second = dataframe[dataframe['play_order'] == 0].copy()
 
-    # Calculate bin edges from the aggregate of all wins
-    all_wins = wins_blocked_1 + wins_blocked_2 + wins_interleaved_1 + wins_interleaved_2
-    bin_edges = np.histogram_bin_edges(all_wins, bins=bins)
+    for df in [df_player_first, df_player_second]:
+        for game_round in df['round'].unique():
+            print(f"Round: {game_round}")
 
-    # Plot histograms using the same bin edges
-    counts_blocked_1, _, _ = ax1.hist(wins_blocked_1, bins=bin_edges, alpha=0.75, color=c_green_1, label='First Game')
-    counts_blocked_2, _, _ = ax1.hist(wins_blocked_2, bins=bin_edges, alpha=1, color=c_purple_1, label='Second Game')
-    ax1.set_title('Win Distribution - Blocked (n=13)')
-    ax1.set_xlabel('Number of Games')
-    ax1.set_ylabel('Count of Wins')
-    ax1.legend()
+            # get this round data that are first moves
+            df_this_round = df[(df['round'] == game_round) & (df['is_first_move'] == True)].copy()
 
-    counts_interleaved_1, _, _ = ax2.hist(wins_interleaved_1, bins=bin_edges, alpha=0.75, color=c_green_1, label='First Game')
-    counts_interleaved_2, _, _ = ax2.hist(wins_interleaved_2, bins=bin_edges, alpha=1, color=c_purple_1, label='Second Game')
-    ax2.set_title('Win Distribution - Interleaved (n=13)')
-    ax2.legend()
+            # check why list index out of range
+            print("len of df_this_round", len(df_this_round))
 
-    plt.tight_layout(pad=2.0)
-    plt.show()
-    # Print the bin counts for each condition
-    # print("Counts for Data Blocked 1:", counts_blocked_1)
-    # print("Counts for Data Blocked 2:", counts_blocked_2)
-    # print("Counts for Data Interleaved 1:", counts_interleaved_1)
-    # print("Counts for Data Interleaved 2:", counts_interleaved_2)
+            games_per_round[game_round] = games_per_round.get(game_round, 0) + len(df_this_round)
+            win_per_round[game_round] = win_per_round.get(game_round, 0) + sum(df_this_round['result'])
+
+        sorted_rounds = sorted(games_per_round.keys())
+
+        for round_num in sorted_rounds:
+            if games_per_round[round_num] != 0 and win_per_round[round_num] != 0:
+                w = round(win_per_round[round_num] / games_per_round[round_num], 3)
+                if df is df_player_first:
+                    win_rate_player_first.append(w)
+                else:
+                    win_rate_player_second.append(w)
+
+    print("win_rate_player_first", win_rate_player_first)
+    print("win_rate_player_second", win_rate_player_second)
+
+    return win_rate_player_first, win_rate_player_second
 
 
-def plot_win_rate(count):
-    global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2
+def plot_win_rate(count, df):
+    global win_rate_blocked_1, win_rate_interleaved_1, win_rate_blocked_2, win_rate_interleaved_2, \
+        win_rate_fiar_all, win_rate_knobby_all
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharey=True, dpi=300)
+    plt.tight_layout(pad=3.0)
+    fig_both, (ax3, ax4) = plt.subplots(1, 2, figsize=(8, 4), sharey=True, dpi=300)
+    fig_playOrder, (ax5, ax6) = plt.subplots(1, 2, figsize=(8, 4), sharey=True)
+    plt.tight_layout(pad=3.0)
+
+    win_rate_player_first, win_rate_player_second = get_win_rate_by_order(df)
 
     # unpack count of blocked / interleaved + fiar / knobby
-    blocked_fiar, blocked_knobby, interleaved_fiar, interleaved_knobby = count
+    (blocked_fiar,
+     blocked_knobby,
+     interleaved_fiar,
+     interleaved_knobby) = count
     blocked_fiar = int(blocked_fiar[0])
     blocked_knobby = int(blocked_knobby[0])
     interleaved_fiar = int(interleaved_fiar[0])
     interleaved_knobby = int(interleaved_knobby[0])
+
+    avg_win_fiar = sum(win_rate_fiar_all) / len(win_rate_fiar_all)
+    avg_win_knobby = sum(win_rate_knobby_all) / len(win_rate_knobby_all)
+
+    avg_win_player_first = sum(win_rate_player_first) / len(win_rate_player_first)
+    avg_win_player_second = sum(win_rate_player_second) / len(win_rate_player_second)
 
     # Create x-axis
     x1_1 = list(range(1, len(win_rate_blocked_1) + 1))
@@ -248,12 +256,21 @@ def plot_win_rate(count):
     x1_2 = list(range(1, len(win_rate_blocked_2) + 1))
     x2_2 = list(range(1, len(win_rate_interleaved_2) + 1))
 
+    x3 = list(range(1, len(win_rate_fiar_all) + 1))
+    x4 = list(range(1, len(win_rate_knobby_all) + 1))
+    x5 = list(range(1, len(win_rate_player_first) + 1))
+    x6 = list(range(1, len(win_rate_player_second) + 1))
+
     print("len of x1_1", len(x1_1))
     print("len of x2_1", len(x2_1))
     print("len of x1_2", len(x1_2))
     print("len of x2_2", len(x2_2))
+    print("len of x3", len(x3))
+    print("len of x4", len(x4))
+    print("len of x5", len(x5))
+    print("len of x6", len(x6))
 
-    # Normalize x-axis values by dividing by the length of the dataset
+    # number to fraction
     # x1_1 = np.linspace(0, 1, len(win_rate_blocked_1))
     # x2_1 = np.linspace(0, 1, len(win_rate_interleaved_1))
     # x1_2 = np.linspace(0, 1, len(win_rate_blocked_2))
@@ -268,6 +285,20 @@ def plot_win_rate(count):
     smooth_b2 = poly_1_2(x1_2)
     poly_2_2 = np.poly1d(np.polyfit(x2_2, win_rate_interleaved_2, 3))
     smooth_i2 = poly_2_2(x2_2)
+    poly_3 = np.poly1d(np.polyfit(x3, win_rate_fiar_all, 3))
+    smooth_fiar = poly_3(x3)
+    poly_4 = np.poly1d(np.polyfit(x4, win_rate_knobby_all, 3))
+    smooth_knobby = poly_4(x4)
+    poly_5 = np.poly1d(np.polyfit(x5, win_rate_player_first, 3))
+    smooth_player_first = poly_5(x5)
+    poly_6 = np.poly1d(np.polyfit(x6, win_rate_player_second, 3))
+    smooth_player_second = poly_6(x6)
+
+    # Histograms for all fiar and knobby games
+    # ax5.hist(win_rate_fiar_all, bins=10, color=c_green_1, alpha=0.7)
+    # ax5.set_title('Fiar games')
+    # ax6.hist(win_rate_knobby_all, bins=10, color=c_purple_1, alpha=0.7)
+    # ax6.set_title('Knobby games')
 
     intercept_b1 = poly_1_1.coefficients[3]
     intercept_i1 = poly_2_1.coefficients[3]
@@ -286,27 +317,60 @@ def plot_win_rate(count):
     ax1.plot(x1_2, smooth_b2, color=c_purple_2)
 
     # Interleaved condition
-    ax2.scatter(x2_1, win_rate_interleaved_1, color =c_green_1, alpha=0.7, s=20, label=label_i1)
+    ax2.scatter(x2_1, win_rate_interleaved_1, color=c_green_1, alpha=0.7, s=20, label=label_i1)
     ax2.plot(x2_1, smooth_i1, color=c_green_2)
     ax2.scatter(x2_2, win_rate_interleaved_2, color=c_purple_1, alpha=0.7, s=20, label=label_i2)
     ax2.plot(x2_2, smooth_i2, color=c_purple_2)
 
-    # Add title and labels
-    ax1.set_title(f'Blocked (n=13)\nFirst game: {blocked_fiar} fiar, {blocked_knobby} knobby')
-    ax2.set_title(f'Interleaved (n=13)\nFirst game: {interleaved_fiar} fiar, {interleaved_knobby} knobby')
+    # All fiar games
+    ax3.scatter(x3, win_rate_fiar_all, color=c_black, alpha=0.3, s=20)
+    ax3.plot(x3, smooth_fiar, color=c_black)
+    ax3.plot(x3, [avg_win_fiar] * len(x3), linestyle='--', color=c_black, label=f'Average: {avg_win_fiar:.3f}')
 
-    ax1.set_xlabel("Rounds of Game (in fraction)")
-    ax1.set_ylabel("Win rate")
+    # All knobby games
+    ax4.scatter(x4, win_rate_knobby_all, color=c_black, alpha=0.3, s=20)
+    ax4.plot(x4, smooth_knobby, color=c_black)
+    ax4.plot(x4, [avg_win_knobby] * len(x4), linestyle='--', color=c_black, label=f'Average: {avg_win_knobby:.3f}')
+
+    # Player order
+    ax5.scatter(x5, win_rate_player_first, color=c_black, alpha=0.3, s=20)
+    ax5.plot(x5, smooth_player_first, color=c_black)
+    ax5.plot(x5, [avg_win_player_first] * len(x5), linestyle='--', color=c_black, label=f'Average: {avg_win_player_first:.3f}')
+    ax6.scatter(x6, win_rate_player_second, color=c_black, alpha=0.3, s=20)
+    ax6.plot(x6, smooth_player_second, color=c_black)
+    ax6.plot(x6, [avg_win_player_second] * len(x6), linestyle='--', color=c_black, label=f'Average: {avg_win_player_second:.3f}')
+
+    # Add title and labels
+    ax1.set_title(f'Blocked (n=13)\nFirst game: {blocked_fiar} Fiar, {blocked_knobby} Knobby')
+    ax2.set_title(f'Interleaved (n=13)\nFirst game: {interleaved_fiar} Fiar, {interleaved_knobby} Knobby')
+    ax3.set_title(f'All Four-in-a-row games')
+    ax4.set_title(f'All Knobby games')
+    ax5.set_title(f'Human goes first')
+    ax6.set_title(f'AI goes first')
+
+    for ax in [ax1, ax3, ax5]:
+        ax.set_xlabel('Game Rounds')
+        ax.set_ylabel('Win rate')
+    for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
+        ax.legend(loc='upper right')
+
     ax1.set_xlim(0, 21)
     ax1.set_xticks(np.arange(0, 21, 5))
     ax2.set_xlim(0, 26)
     ax2.set_xticks(np.arange(0, 26, 5))
-    # ax1.set_xlim(0, 1)
-    # ax2.set_xlim(0, 1)
+    ax3.set_xlim(0, 26)
+    ax3.set_xticks(np.arange(0, 26, 5))
+    ax3.set_yticks(np.arange(0, 1, 0.1))
+    ax4.set_xlim(0, 26)
+    ax4.set_xticks(np.arange(0, 26, 5))
+    ax4.set_yticks(np.arange(0, 1, 0.1))
+    ax5.set_xlim(0, 56)
+    ax5.set_xticks(np.arange(0, 56, 5))
+    ax5.set_yticks(np.arange(0, 1, 0.1))
+    ax6.set_xlim(0, 56)
+    ax6.set_xticks(np.arange(0, 56, 5))
+    ax6.set_yticks(np.arange(0, 1, 0.1))
 
-    plt.tight_layout(pad=3.0)
-    ax1.legend(loc='upper left')
-    ax2.legend(loc='upper left')
     plt.show()
 
 
@@ -322,6 +386,15 @@ def get_all_move_prob(id):
     all_move_pos_first = defaultdict(list)
     all_move_pos_last = defaultdict(list)
     all_rt = defaultdict(list)
+    all_play_order = defaultdict(list)
+    all_results = defaultdict(list)
+
+    # get game results
+    file_params = "params.json"
+    path_param = os.path.join(root, f"{id}\\{file_params}")
+    param = json.load(open(path_param))
+    games_results = param.get('games_results', [])
+    games_results = [0 if r != 1 else 1 for r in games_results]
 
     # iterate through all games played by the participant
     for round in range(1, 60):  # 60 is the max #games played so far
@@ -331,6 +404,7 @@ def get_all_move_prob(id):
         prob_dict_new = defaultdict(list)
         rt_dict = defaultdict(list)
         board_dict = defaultdict(list)
+        is_player_first = defaultdict(list)
 
         i = str(round)
         file_probKnobby = id + "_fullProbKnobby_" + i + ".npy"
@@ -339,6 +413,7 @@ def get_all_move_prob(id):
         new_file_probKnobby = id + "_new_fullProbKnobby_" + i + ".npy"
         new_file_probFour = id + "_new_fullProbFiar_" + i + ".npy"
         file_rt = id + "_RT_" + i + ".npy"
+
         # new_file_probKnobby = id + "_new_fullProbKnobby_" + i
         # new_file_probFour = id + "_new_fullProbFiar_" + i
 
@@ -372,11 +447,18 @@ def get_all_move_prob(id):
 
             move_pos_first = defaultdict(list)
             move_pos_last = defaultdict(list)
+
+            # check player order - if the matrix contains 2 in move[0]
+            if np.any(move[0] == 2):
+                is_player_first[round] = 0
+            else:
+                is_player_first[round] = 1
+
             for s in range(n_steps):
-                if np.all(move[s][0] == None) or np.all(move[s][1] == None): # skip if the move is None
+                if np.all(move[s][0] == None) or np.all(move[s][1] == None):  # skip if the move is None
                     continue
                 # Check if this is the last non-None move in the sequence
-                move_pos_first[s] = s==0
+                move_pos_first[s] = s == 0
                 is_last_move = np.all(move[s + 1] == None)
                 move_pos_last[s] = is_last_move
 
@@ -404,7 +486,6 @@ def get_all_move_prob(id):
             # print("probs knobby for this round", probKnobby)
             # print("probs fiar for this round", probFour)
 
-
             # smoothen probability
             # p_smoothed = (1-α) * p_model + α*(1/(# empty squares))
             α = 0.01
@@ -419,10 +500,10 @@ def get_all_move_prob(id):
                 if (n_available == 0):
                     print("No available moves in round", round, "step", s)
                     continue
-                probFour_new[s] = (1-α) * probFour_new[s] + α*(1/n_available)
-                probKnobby_new[s] = (1-α) * probKnobby_new[s] + α*(1/n_available)
-                probFour[s] = (1-α) * probFour[s] + α*(1/n_available)
-                probKnobby[s] = (1-α) * probKnobby[s] + α*(1/n_available)
+                probFour_new[s] = (1 - α) * probFour_new[s] + α * (1 / n_available)
+                probKnobby_new[s] = (1 - α) * probKnobby_new[s] + α * (1 / n_available)
+                probFour[s] = (1 - α) * probFour[s] + α * (1 / n_available)
+                probKnobby[s] = (1 - α) * probKnobby[s] + α * (1 / n_available)
 
             n = len(all_moves_dict)
             for i in range(len(move_dict)):
@@ -433,6 +514,8 @@ def get_all_move_prob(id):
                 all_move_pos_first[n + i] = move_pos_first[i]
                 all_move_pos_last[n + i] = move_pos_last[i]
                 all_rt[n + i] = rt_dict[i]
+                all_play_order[n + i] = is_player_first[round]
+                all_results[n + i] = games_results[round - 1]
 
             # NEW save if new prob files are not found
             # -------------------------
@@ -443,7 +526,6 @@ def get_all_move_prob(id):
 
     # mask the probability matrices with the move matrices
     for m in range(0, len(all_moves_dict)):
-
         move = all_moves_dict[m]
         mask = move.astype(bool)
         if len(all_prob_dict[m]) != 0:
@@ -452,7 +534,7 @@ def get_all_move_prob(id):
             all_prob_dict_new[m] = [all_prob_dict_new[m][0][mask], all_prob_dict_new[m][1][mask]]
 
     return (all_board_dict, all_prob_dict, all_moves_dict, all_prob_dict_new, all_games_round,
-            all_move_pos_first, all_move_pos_last, all_rt)
+            all_move_pos_first, all_move_pos_last, all_rt, all_play_order, all_results)
 
 
 def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
@@ -531,7 +613,8 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
 
     if mode != 1:
         # v2 === Blocked condition
-        model_blocked = smf.mixedlm('prob_diff ~ game_type * frac_currGame', df_blocked, groups=df_blocked['id'], re_formula="1 + frac_currGame")
+        model_blocked = smf.mixedlm('prob_diff ~ game_type * frac_currGame', df_blocked, groups=df_blocked['id'],
+                                    re_formula="1 + frac_currGame")
         result_blocked_mle = model_blocked.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_blocked_mle\n")
         print(result_blocked_mle.summary())
@@ -552,22 +635,24 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
             if id == df_b_first['id'].unique()[0]:
                 ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4, label=label_1)
             else:
-                ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4, label='_nolegend_')
+                ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4,
+                             label='_nolegend_')
         for id in df_b_second['id'].unique():
             df_id = df_b_second[df_b_second['id'] == id]
             if id == df_b_second['id'].unique()[0]:
                 ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label=label_2)
             else:
-                ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label='_nolegend_')
+                ax_b_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4,
+                             label='_nolegend_')
 
         ax_b_1b.scatter('frac_currGame', 'prob_diff', data=df_b_first,
                         color=c_green_1, alpha=0.4, s=5, label='_nolegend_')
         ax_b_1b.scatter('frac_currGame', 'prob_diff', data=df_b_second,
                         color=c_purple_1, alpha=0.4, s=5, label='_nolegend_')
 
-
         # v2 === Interleaved condition
-        model_interleaved = smf.mixedlm('prob_diff ~ game_type * frac_currGame', df_interleaved, groups=df_interleaved['id'], re_formula="1 + frac_currGame")
+        model_interleaved = smf.mixedlm('prob_diff ~ game_type * frac_currGame', df_interleaved,
+                                        groups=df_interleaved['id'], re_formula="1 + frac_currGame")
         result_interleaved_mle = model_interleaved.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_interleaved_mle\n")
         print(result_interleaved_mle.summary())
@@ -588,21 +673,22 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
             if id == df_i_first['id'].unique()[0]:
                 ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4, label=label_1)
             else:
-                ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4, label='_nolegend_')
+                ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_green_2, alpha=0.4,
+                             label='_nolegend_')
         for id in df_i_second['id'].unique():
             df_id = df_i_second[df_i_second['id'] == id]
             if id == df_i_second['id'].unique()[0]:
                 ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label=label_2)
 
             else:
-                ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4, label='_nolegend_')
+                ax_i_1b.plot('frac_currGame', 'fittedvalues', data=df_id, color=c_purple_2, alpha=0.4,
+                             label='_nolegend_')
 
         ax_i_1b.scatter('frac_currGame', 'prob_diff', data=df_i_first,
                         color=c_green_1, alpha=0.4, s=5, label='_nolegend_')
         ax_i_1b.scatter('frac_currGame', 'prob_diff', data=df_i_second,
                         color=c_purple_1, alpha=0.4, s=5, label='_nolegend_')
 
-        
         # Set labels and titles for all subplots
         for ax in [ax_b_1b, ax_i_1b]:
             ax.legend(loc='upper right')
@@ -626,13 +712,14 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
 
         # = First half of blocked data
         ax_b_1a.scatter('frac_currGame', 'prob_diff', data=df_blocked_first_half,
-                             color=c_green_1, alpha=0.3, s=5, label='_nolegend_')
-        model_blocked_first_half = smf.mixedlm('prob_diff ~ frac_currGame', df_blocked_first_half, groups=df_blocked_first_half['id'], re_formula="1 + frac_currGame")
+                        color=c_green_1, alpha=0.3, s=5, label='_nolegend_')
+        model_blocked_first_half = smf.mixedlm('prob_diff ~ frac_currGame', df_blocked_first_half,
+                                               groups=df_blocked_first_half['id'], re_formula="1 + frac_currGame")
         result_blocked_mle_1 = model_blocked_first_half.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_blocked_mle_1\n")
         print(result_blocked_mle_1.summary())
         slope = result_blocked_mle_1.params['frac_currGame']
-        intercept = result_blocked_mle_1.params['Intercept']        
+        intercept = result_blocked_mle_1.params['Intercept']
         group_variance = result_blocked_mle_1.cov_re.iloc[0, 0]  # Accessing the variance for the random intercept
         label = f'Slope: {slope:.3f}\nIntercept: {intercept:.3f}'
         df_blocked_first_half.loc[:, 'fittedvalues'] = result_blocked_mle_1.fittedvalues
@@ -648,8 +735,9 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
 
         # = Second half of blocked data
         ax_b_2a.scatter('frac_currGame', 'prob_diff', data=df_blocked_second_half,
-                             color=c_purple_1, alpha=0.3, s=5, label='_nolegend_')
-        model_blocked_second_half = smf.mixedlm('prob_diff ~ frac_currGame', df_blocked_second_half, groups=df_blocked_second_half['id'], re_formula="1 + frac_currGame")
+                        color=c_purple_1, alpha=0.3, s=5, label='_nolegend_')
+        model_blocked_second_half = smf.mixedlm('prob_diff ~ frac_currGame', df_blocked_second_half,
+                                                groups=df_blocked_second_half['id'], re_formula="1 + frac_currGame")
         result_blocked_mle_2 = model_blocked_second_half.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_blocked_mle_2\n")
         print(result_blocked_mle_2.summary())
@@ -669,15 +757,15 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
         predicted_prob_diff = intercept + slope * frac_moves_range
         ax_b_2a.plot(frac_moves_range, predicted_prob_diff, color=c_black, label=label)
 
-
         # v1 === Interleaved condition
         df_interleaved_odd = df_interleaved[df_interleaved['game_type'] == 0].copy()
         df_interleaved_even = df_interleaved[df_interleaved['game_type'] == 1].copy()
 
         # = Odd indices of interleaved data
         ax_i_1a.scatter('frac_currGame', 'prob_diff', data=df_interleaved_odd,
-                                 color=c_green_1, alpha=0.3, s=5, label='_nolegend_')
-        model_interleaved_odd = smf.mixedlm('prob_diff ~ frac_currGame', df_interleaved_odd, groups=df_interleaved_odd['id'], re_formula="1 + frac_currGame")
+                        color=c_green_1, alpha=0.3, s=5, label='_nolegend_')
+        model_interleaved_odd = smf.mixedlm('prob_diff ~ frac_currGame', df_interleaved_odd,
+                                            groups=df_interleaved_odd['id'], re_formula="1 + frac_currGame")
         result_interleaved_mle_1 = model_interleaved_odd.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_interleaved_mle_1\n")
         print(result_interleaved_mle_1.summary())
@@ -699,8 +787,9 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
 
         # = Even indices of interleaved data
         ax_i_2a.scatter('frac_currGame', 'prob_diff', data=df_interleaved_even,
-                                 color=c_purple_1, alpha=0.3, s=5, label='_nolegend_')
-        model_interleaved_even = smf.mixedlm('prob_diff ~ frac_currGame', df_interleaved_even, groups=df_interleaved_even['id'], re_formula="1 + frac_currGame")
+                        color=c_purple_1, alpha=0.3, s=5, label='_nolegend_')
+        model_interleaved_even = smf.mixedlm('prob_diff ~ frac_currGame', df_interleaved_even,
+                                             groups=df_interleaved_even['id'], re_formula="1 + frac_currGame")
         result_interleaved_mle_2 = model_interleaved_even.fit(method='nm', maxiter=5000, ftol=1e-2)
         print("result_interleaved_mle_2\n")
         print(result_interleaved_mle_2.summary())
@@ -731,6 +820,7 @@ def plot_mixed_effect_model(df_blocked, df_interleaved, *axes):
         ax_b_2a.set_title('Blocked, Second Game (n=13)')
         ax_i_1a.set_title('Interleaved, First Game (n=13)')
         ax_i_2a.set_title('Interleaved, Second Game (n=13)')
+
 
 def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
     y_diff = []
@@ -774,8 +864,8 @@ def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
 
     elif (condition == 1):  # interleaved learning
         # plot odd and even data separately
-        for i, round_num in enumerate(all_round): # i = index, move_num = move number
-            if (round_num % 2 != 0): # first game
+        for i, round_num in enumerate(all_round):  # i = index, move_num = move number
+            if (round_num % 2 != 0):  # first game
                 x_1.append(x_fraction[i])
                 y_1.append(y_diff[i])
                 rt_1.append(all_rt[i])
@@ -864,6 +954,7 @@ def plot_move_prob_comparison(ax1, ax2, dataFrame, condition):
     ax1_rt.legend(loc='upper left', fontsize=8)
     ax2_rt.legend(loc='upper left', fontsize=8)
 
+
 def normalize_and_diff_prob(prob, first_game):
     # a new list with length of prob
     diff = [0] * len(prob)
@@ -893,6 +984,7 @@ def normalize_and_diff_prob(prob, first_game):
 
     return diff
 
+
 def remove_outliers(data):
     # remove outliers
     Q1 = np.percentile(data, 25)
@@ -911,6 +1003,7 @@ def remove_outliers(data):
     inliers = (data >= lower_bound) & (data <= upper_bound)
 
     return inliers
+
 
 def check_data_quality(all_data):
     # a dictionary to store the win rate for each participant
@@ -933,19 +1026,20 @@ def check_data_quality(all_data):
 
     # plot win rate distribution
     n_bin = round(math.sqrt(len(win_rate_dict)))
-    plt.figure(figsize=(4, 4))
-    plt.hist(win_rate_dict.values(), bins=5, alpha=0.5, color='black', edgecolor='white')
+    plt.figure(figsize=(4, 4), dpi=300)
+    plt.hist(win_rate_dict.values(), bins=5, alpha=0.8, color=c_black, edgecolor='white')
     plt.xlabel('Win Rate')
     plt.ylabel('Frequency')
     plt.yticks(range(0, 10, 1))
     plt.title('Win Rate Distribution (n={})'.format(len(win_rate_dict)))
-    plt.xticks(np.arange(0, 1, 0.1))
+    plt.xticks(np.arange(0, 1.1, 0.1))
     plt.show()
+
 
 def create_dataframe(id_blocked, id_interleaved):
     data = []
     for id in id_blocked + id_interleaved:
-        board, prob, move, prob_new, round, is_first_move, is_last_move, rt = get_all_move_prob(id)
+        board, prob, move, prob_new, round, is_first_move, is_last_move, rt, play_order, result = get_all_move_prob(id)
 
         prob_four = []
         prob_knobby = []
@@ -962,7 +1056,7 @@ def create_dataframe(id_blocked, id_interleaved):
         game_type = []
         for i in range(len(game_type_list)):
             for j in range(len(round)):
-                if (round[j] == i+1):
+                if (round[j] == i + 1):
                     game_type.append(game_type_list[i])
 
         # count rounds for each game type
@@ -985,7 +1079,7 @@ def create_dataframe(id_blocked, id_interleaved):
         currGame1 = 0
         currGame2 = 0
         for i in range(len(prob)):
-            frac_moves = (i+1) / len(prob)
+            frac_moves = (i + 1) / len(prob)
 
             if game_type[i] == 0:
                 currGame1 += 1
@@ -993,19 +1087,19 @@ def create_dataframe(id_blocked, id_interleaved):
             else:
                 currGame2 += 1
                 frac_currGame = currGame2 / count_second_game
-            
+
             data.append([id, condition, first_game, round[i], game_type[i],
-                         i+1, frac_moves, frac_currGame, board[i],
+                         i + 1, frac_moves, frac_currGame, board[i],
                          prob[i], prob_new[i], prob_four[i], prob_knobby[i], prob_new_four[i], prob_new_knobby[i],
                          rt[i],
-                         is_first_move[i], is_last_move[i]])
+                         is_first_move[i], is_last_move[i], play_order[i], result[i]])
     # df = None
     df = pd.DataFrame(data,
-                columns=['id', 'condition', 'first_game', 'round', 'game_type',
-                         'move_number', 'frac_moves', 'frac_currGame', 'context',
-                         'prob_diff', 'prob_diff_new', 'four_old', 'knobby_old', 'four_new', 'knobby_new',
-                         'rt',
-                         'is_first_move', 'is_last_move'])
+                      columns=['id', 'condition', 'first_game', 'round', 'game_type',
+                               'move_number', 'frac_moves', 'frac_currGame', 'context',
+                               'prob_diff', 'prob_diff_new', 'four_old', 'knobby_old', 'four_new', 'knobby_new',
+                               'rt',
+                               'is_first_move', 'is_last_move', 'play_order', 'result'])
 
     # test =================
     # Calculate descriptive statistics for prob_diff
@@ -1051,6 +1145,7 @@ def create_dataframe(id_blocked, id_interleaved):
     # ======================
     return df
 
+
 def main():
     global params_list, \
         paths_blocked, \
@@ -1061,6 +1156,8 @@ def main():
         win_rate_interleaved_1, \
         win_rate_blocked_2, \
         win_rate_interleaved_2, \
+        win_rate_knobby_all, \
+        win_rate_fiar_all, \
         id_blocked, \
         id_interleaved
 
@@ -1078,10 +1175,9 @@ def main():
     data_interleaved_1 = defaultdict(list)
     data_blocked_2 = defaultdict(list)
     data_interleaved_2 = defaultdict(list)
-    # data_blocked_1 = []
-    # data_interleaved_1 = []
-    # data_blocked_2 = []
-    # data_interleaved_2 = []
+    results_knobby_all = defaultdict(list)
+    results_fiar_all = defaultdict(list)
+
 
     # how many people played a specific game first in a condition
     count_blocked_first_4iar = 0
@@ -1089,49 +1185,52 @@ def main():
     count_mix_first_4iar = 0
     count_mix_first_knobby = 0
 
+
     # 1) compare first & second game results
+
     for params_path in paths_blocked:
         id, first_game, results_knobby, results_four = calculate_win(params_path)
+        results_knobby_all[id] = results_knobby
+        results_fiar_all[id] = results_four
+
         if (first_game == 0):
             data_blocked_1[id] = results_four
             data_blocked_2[id] = results_knobby
-            # data_blocked_1.append(results_four)
-            # data_blocked_2.append(results_knobby)
             count_blocked_first_4iar += 1
         elif (first_game == 1):
             data_blocked_1[id] = results_knobby
             data_blocked_2[id] = results_four
-            # data_blocked_1.append(results_knobby)
-            # data_blocked_2.append(results_four)
             count_blocked_first_knobby += 1
 
     for params_path in paths_interleaved:
         id, first_game, results_knobby, results_four = calculate_win(params_path)
+        results_knobby_all[id] = results_knobby
+        results_fiar_all[id] = results_four
+
         if (first_game == 0):
             data_interleaved_1[id] = results_four
             data_interleaved_2[id] = results_knobby
-            # data_interleaved_1.append(results_four)
-            # data_interleaved_2.append(results_knobby)
             count_mix_first_4iar += 1
         elif (first_game == 1):
             data_interleaved_1[id] = results_knobby
             data_interleaved_2[id] = results_four
-            # data_interleaved_1.append(results_knobby)
-            # data_interleaved_2.append(results_four)
             count_mix_first_knobby += 1
-
-    plot_winrate(data_blocked_1, data_interleaved_1, data_blocked_2, data_interleaved_2)
 
     win_rate_blocked_1, max_b_1 = get_win_rate_all(data_blocked_1)
     win_rate_interleaved_1, max_i_1 = get_win_rate_all(data_interleaved_1)
     win_rate_blocked_2, max_b_2 = get_win_rate_all(data_blocked_2)
     win_rate_interleaved_2, max_i_2 = get_win_rate_all(data_interleaved_2)
-
-    count = list(zip([count_blocked_first_4iar, count_blocked_first_knobby, count_mix_first_4iar, count_mix_first_knobby]))
-    plot_win_rate(count)
+    win_rate_knobby_all, max_k = get_win_rate_all(results_knobby_all)
+    win_rate_fiar_all, max_f = get_win_rate_all(results_fiar_all)
 
     # create dataframe for plotting
     df = create_dataframe(id_blocked, id_interleaved)
+
+    count = list(zip([count_blocked_first_4iar,
+                      count_blocked_first_knobby,
+                      count_mix_first_4iar,
+                      count_mix_first_knobby]))
+    plot_win_rate(count, df)
 
     # 2) plot individual move probability comparison
     # blocked
@@ -1155,17 +1254,18 @@ def main():
     df_interleaved_copy.loc[:, 'id'] = df_interleaved_copy['id'].astype(str)
     df_interleaved_copy.loc[:, 'id'] = pd.Categorical(df_interleaved_copy['id'])
 
-
-    fig_mle_1, ((ax_blocked_1a, ax_blocked_2a), (ax_interleaved_1a, ax_interleaved_2a)) = plt.subplots(2, 2, figsize=(10, 8), sharey=True)
-    fig_mle_2, (ax_blocked_b, ax_interleaved_b) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    fig_mle_1, ((ax_blocked_1a, ax_blocked_2a), (ax_interleaved_1a, ax_interleaved_2a)) = plt.subplots(2, 2,
+                                                                                                       figsize=(10, 8),
+                                                                                                       sharey=True,
+                                                                                                       dpi=300)
+    fig_mle_2, (ax_blocked_b, ax_interleaved_b) = plt.subplots(1, 2, figsize=(8, 4), sharey=True, dpi=300)
     plt.tight_layout(pad=3.0)
-    fig_mle_rt, (ax_blocked_rt, ax_interleaved_rt) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    fig_mle_rt, (ax_blocked_rt, ax_interleaved_rt) = plt.subplots(1, 2, figsize=(8, 4), sharey=True, dpi=300)
     plt.tight_layout(pad=3.0)
     plot_mixed_effect_model(df_blocked_copy, df_interleaved_copy,
                             ax_blocked_1a, ax_blocked_2a, ax_interleaved_1a, ax_interleaved_2a,
                             ax_blocked_b, ax_interleaved_b,
                             ax_blocked_rt, ax_interleaved_rt)
-
 
     plt.show()
 
